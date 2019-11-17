@@ -1,3 +1,0 @@
-Hello
-Am a new feature
-please merge me with master
