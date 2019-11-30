@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
@@ -16,10 +17,13 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import sun.misc.FloatingDecimal;
 
 import javax.swing.*;
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
@@ -29,19 +33,25 @@ public class Controller implements Initializable {
     @FXML
     public TextArea urlTextArea;
     @FXML
-    public ComboBox<String> comboBox;
+    public ComboBox<String> addComboBox;
     public ComboBox<Integer> comboBox2;
     public TextField textFieldOption;
     public TextArea textAreaOption;
+    public ComboBox<String> varComboBox;
+
 
     @FXML
     public VBox vbMenu;
     FileChooser fileChooser = new FileChooser();
-    ObservableList<String> optt = FXCollections.observableArrayList("Int", "Float", "Double", "Loop");
+    ObservableList<String> optt = FXCollections.observableArrayList("Char", "Int", "Float", "Var", "Loop", "EndLoop");
+    ObservableList<String> varOption = FXCollections.observableArrayList();
 
     @FXML
     private FileReader fileReader;
 
+    //private BinaryFormat structure.addElementByName("loop","213");
+    //ArrayList<Element> allElement
+    //ArrayList<Element> variables
     @FXML
     public void handleDragOver(DragEvent dragEvent) {
         if (dragEvent.getDragboard().hasFiles()) {
@@ -66,15 +76,23 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        comboBox.setItems(optt);
-        comboBox.setOnAction(action -> {
-            String str = comboBox.getSelectionModel().getSelectedItem();
+        addComboBox.setItems(optt);
+        varComboBox.setItems(varOption);
+
+        addComboBox.setOnAction(action -> {
+            String str = addComboBox.getSelectionModel().getSelectedItem();
             if (str.equals("Loop")) {
+                varComboBox.setVisible(true);
                 textFieldOption.setVisible(true);
+            } else if (str.equals("Var")) {
+                textFieldOption.setVisible(true);
+                varComboBox.setVisible(false);
             } else {
                 textFieldOption.setVisible(false);
+                varComboBox.setVisible(false);
             }
         });
+
 
         fileChooser.setInitialDirectory(new File("c:\\"));     // save as open initial directory
     }
@@ -84,17 +102,65 @@ public class Controller implements Initializable {
 
     public void buttonAddMouseClicked() {
         //  textAreaOption.setText(comboBox.getSelectionModel().getSelectedItem());
-        String str = comboBox.getSelectionModel().getSelectedItem();
-        if (str != "Loop") {
-            textAreaOption.appendText(comboBox.getSelectionModel().getSelectedItem() + "\n");
-        } else {
-            String number = textFieldOption.getCharacters().toString();
-            if (number.matches("^[0-9]*$") && Integer.parseInt(number) < 1000) {
-                textAreaOption.appendText(str + "(" + number + ")\n");
-            } else {
+        String str = addComboBox.getSelectionModel().getSelectedItem();
 
-            }
+        if (str != "Loop" && str != "Var" && str != "EndLoop" && str != null) {
+            addPrimitive(addComboBox.getSelectionModel().getSelectedItem());
+        } else if (str == "Loop") {
+            addLoop(str);
+        } else if (str == "Var") {
+            addVar(str);
+        } else if (str == "EndLoop") {
+            addEndLoop(str);
         }
+    }
+
+    private void addEndLoop(String str) {
+        if(flag == true) {
+            textAreaOption.appendText(addComboBox.getSelectionModel().getSelectedItem() + "\n");
+            flag = false;
+        } else{
+            Alert.display("Loop Must be include ");
+            flag = false;
+        }
+    }
+
+    private void addVar(String str) {
+        String var = textFieldOption.getCharacters().toString();
+        if (!var.contains(" ") && !var.isEmpty()) {
+            varOption.addAll(var);
+            textAreaOption.appendText(str + "(" + var + ")\n");
+            textFieldOption.clear();
+        } else {
+            textFieldOption.clear();
+        }
+    }
+
+    private boolean flag= false;
+    private void addLoop(String str) {
+        String num = textFieldOption.getCharacters().toString();
+        String varName = varComboBox.getValue();
+
+        System.out.println(num);
+        try {
+            if (num.matches("^[0-9]*$") && Integer.parseInt(num) < 10000) {   //&& Integer.parseInt(numOrVar +"") < 10000
+                textAreaOption.appendText(str + "(" + num + ")\n");
+                flag =true;
+            }
+        } catch (NumberFormatException e) {
+            if (varName != null) {
+                textAreaOption.appendText(str + "(" + varName + ")\n");
+                textFieldOption.clear();
+                flag = true;
+            }
+        } finally {
+            varComboBox.setAccessibleText(varComboBox.getPromptText());
+        }
+
+    }
+
+    private void addPrimitive(String selectedItem) {
+        textAreaOption.appendText( selectedItem + "\n");
     }
 
     public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
@@ -140,4 +206,49 @@ public class Controller implements Initializable {
         }
     }
 
+
+}
+
+class BinaryStructure{
+    String str;
+    int numVar;
+    String StrVar;
+
+    public BinaryStructure(String str) {
+        this.str = str;
+    }
+
+    public BinaryStructure(String str, int numVar) {
+        this.str = str;
+        this.numVar = numVar;
+    }
+
+    public BinaryStructure(String str, String strVar) {
+        this.str = str;
+        StrVar = strVar;
+    }
+
+    public String getStr() {
+        return str;
+    }
+
+    public void setStr(String str) {
+        this.str = str;
+    }
+
+    public int getNumVar() {
+        return numVar;
+    }
+
+    public void setNumVar(int numVar) {
+        this.numVar = numVar;
+    }
+
+    public String getStrVar() {
+        return StrVar;
+    }
+
+    public void setStrVar(String strVar) {
+        StrVar = strVar;
+    }
 }
