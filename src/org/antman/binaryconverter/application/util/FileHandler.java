@@ -4,6 +4,8 @@ package org.antman.binaryconverter.application.util;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileHandler {
     public FileHandler(){
@@ -21,13 +23,7 @@ public class FileHandler {
 
     public List<String> extractLinesFromFile(File file) throws FileNotFoundException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        List<String> lines = new ArrayList<>();
-        try {
-            lines.add(bufferedReader.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return lines;
+        return bufferedReader.lines().collect(Collectors.toList());
     }
 
 }

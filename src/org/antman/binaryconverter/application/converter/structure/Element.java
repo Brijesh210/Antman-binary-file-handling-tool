@@ -1,4 +1,4 @@
-package org.antman.binaryconverter.application.converter;
+package org.antman.binaryconverter.application.converter.structure;
 
 
 
@@ -36,9 +36,8 @@ public abstract  class Element {
         CHAR("char"),
         FLOAT("float"),
         LOOP("loop"),
-        LOOP_WITH_VAR("loop"),
-        ENDLOOP("endloop"),
-        VAR("var");
+        VAR("var"),
+        ENDLOOP("endloop");
 
         private String name;
 
