@@ -14,9 +14,10 @@
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="Open File" />
-                                <MenuItem mnemonicParsing="false" text="Recent File " />
-                                <MenuItem mnemonicParsing="false" text="Save" />
+                                <MenuItem fx:id="menuOpenStructureFile" mnemonicParsing="false" onAction="#menuOpenStructure" text="Open Stucture File" />
+                                <MenuItem fx:id="menuOpenInputFile" mnemonicParsing="false" text="Open Input File" />
+                                <MenuItem fx:id="menuSaveStructure" mnemonicParsing="false" text="Save As Stucture" />
+                                <MenuItem fx:id="menuSaveOutput" mnemonicParsing="false" text="Save As Output" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Edit">
@@ -35,18 +36,24 @@
                     <items>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                             <children>
-                                <Pane prefHeight="563.0" prefWidth="555.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="304.0" />
+                                <Pane prefHeight="563.0" prefWidth="555.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="304.0">
+                                    <children>
+                                        <Button fx:id="convertButton" layoutX="411.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#convertButtonOnMouseClicked" text="Convert" />
+                                    </children>
+                                </Pane>
                                 <Pane prefHeight="259.0" prefWidth="555.0" AnchorPane.bottomAnchor="304.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <children>
                                         <ComboBox fx:id="addComboBox" layoutX="24.0" layoutY="52.0" onMouseClicked="#comboBoxMouseKeyPressed" prefWidth="150.0" promptText="Select one">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor></ComboBox>
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </ComboBox>
                                         <TextArea fx:id="textAreaOption" layoutX="340.0" onDragDropped="#onDragDroppedStructure" onDragOver="#onDragOverStructure" prefHeight="195.0" prefWidth="200.0" />
                                         <Button fx:id="buttonAdd" layoutX="215.0" layoutY="52.0" mnemonicParsing="false" onMouseClicked="#buttonAddMouseClicked" text="Add">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor></Button>
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </Button>
                                         <ComboBox fx:id="comboBox2" editable="true" layoutX="24.0" layoutY="102.0" prefHeight="31.0" prefWidth="150.0" promptText="Add Iteration" visible="false" />
                                         <TextField fx:id="textFieldOption" layoutX="24.0" layoutY="144.0" prefHeight="31.0" prefWidth="150.0" visible="false" />
                                         <Button fx:id="saveAsStructure" layoutX="408.0" layoutY="214.0" mnemonicParsing="false" onMouseClicked="#saveAsStructureOnMouseClicked" text="Save As" />
@@ -62,13 +69,13 @@
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                             <children>
                                                 <Label alignment="CENTER" prefHeight="25.0" prefWidth="541.0" text="Input File" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                                <TextArea fx:id="urlTextArea" onDragDropped="#handleDragDrop" onDragOver="#handleDragOver" prefHeight="128.0" prefWidth="286.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0" />
+                                                <TextArea fx:id="urlTextArea" editable="false" onDragDropped="#handleDragDrop" onDragOver="#handleDragOver" prefHeight="128.0" prefWidth="286.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0" />
                                             </children>
                                         </AnchorPane>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                             <children>
                                                 <Label alignment="CENTER" prefHeight="25.0" prefWidth="541.0" text="Output File" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                                <TextArea layoutY="26.0" prefHeight="352.0" prefWidth="543.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0" />
+                                                <TextArea fx:id="outputTextArea" editable="false" layoutY="26.0" prefHeight="352.0" prefWidth="543.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0" />
                                             </children>
                                         </AnchorPane>
                                     </items>
