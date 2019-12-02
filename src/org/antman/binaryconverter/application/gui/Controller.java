@@ -2,29 +2,27 @@ package org.antman.binaryconverter.application.gui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.IndexRange;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import sun.misc.FloatingDecimal;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.URL;
+<<<<<<< HEAD
 import java.util.*;
 
 import static sun.java2d.cmm.ColorTransform.In;
+=======
+import java.util.ResourceBundle;
+>>>>>>> d0ae8abd46f4f088706ba6686c30074c57acf98a
 
 public class Controller implements Initializable {
     @FXML
@@ -207,6 +205,7 @@ public class Controller implements Initializable {
         }
     }
 
+<<<<<<< HEAD
     public void menuOpenStructure(ActionEvent actionEvent) {
 //        Window stage = vbMenu.getScene().getWindow();
         Window stage = vbMenu.getScene().getWindow();
@@ -230,3 +229,7 @@ public class Controller implements Initializable {
 
 }
 
+=======
+
+}
+>>>>>>> d0ae8abd46f4f088706ba6686c30074c57acf98a
