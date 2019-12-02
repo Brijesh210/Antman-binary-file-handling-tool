@@ -2,6 +2,7 @@ package org.antman.binaryconverter.application.gui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -16,13 +17,12 @@ import javafx.stage.Window;
 
 import java.io.*;
 import java.net.URL;
-<<<<<<< HEAD
-import java.util.*;
 
 import static sun.java2d.cmm.ColorTransform.In;
-=======
+
+import java.util.HashMap;
 import java.util.ResourceBundle;
->>>>>>> d0ae8abd46f4f088706ba6686c30074c57acf98a
+
 
 public class Controller implements Initializable {
     @FXML
@@ -205,7 +205,7 @@ public class Controller implements Initializable {
         }
     }
 
-<<<<<<< HEAD
+
     public void menuOpenStructure(ActionEvent actionEvent) {
 //        Window stage = vbMenu.getScene().getWindow();
         Window stage = vbMenu.getScene().getWindow();
@@ -229,7 +229,3 @@ public class Controller implements Initializable {
 
 }
 
-=======
-
-}
->>>>>>> d0ae8abd46f4f088706ba6686c30074c57acf98a
