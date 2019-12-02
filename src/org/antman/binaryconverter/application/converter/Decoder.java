@@ -32,18 +32,28 @@ public class Decoder {
     public List<String> decode(BinaryStructure structure, String binaryString){
         List<String> result = new ArrayList<>();
         int i = 0;
-        while(binaryString.length() > 0 && i < structure.size()){
-            Element.Type type = structure.get(i).getType();
-            if(type.isPrimitive()){
-                PrimitiveElement element = (PrimitiveElement)structure.get(i);
-                String substring = binaryString.substring(0,element.getSize());
-                if(type == Element.Type.INT){
-                    result.add(String.valueOf(convertBinaryToInt(substring));
-                } else if(type == Element.Type.CHAR){
-                    result.add(String.valueOf(convertBinaryToChar(substring));
-                } else if(type == Element.Type.FLOAT){
-                    result.add(String.valueOf(convertBinaryToFloat(substring)));                }
+        try {
+            while (binaryString.length() > 0 && i < structure.size()) {
+                Element.Type type = structure.get(i).getType();
+                if (type.isPrimitive()) {
+                    System.out.println(type);
+                    PrimitiveElement element = (PrimitiveElement) structure.get(i);
+                    String substring = binaryString.substring(0, element.getSize());
+                    if (type == Element.Type.INT) {
+                        result.add(String.valueOf(convertBinaryToInt(substring)));
+                        binaryString = binaryString.substring(element.getSize(), binaryString.length());
+                    } else if (type == Element.Type.CHAR) {
+                        result.add(convertBinaryToChar(substring) + "");
+                        binaryString = binaryString.substring(element.getSize(), binaryString.length());
+                    } else if (type == Element.Type.FLOAT) {
+                        result.add(convertBinaryToFloat(substring) + "");
+                        binaryString = binaryString.substring(element.getSize(), binaryString.length());
+                    }
+                }
+                i++;
             }
+        }catch (StringIndexOutOfBoundsException e){
+            return result;
         }
         return result;
     }

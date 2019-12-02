@@ -1,39 +1,44 @@
 package org.antman.binaryconverter.application.converter;
 
 import org.antman.binaryconverter.application.converter.structure.BinaryStructure;
+import org.antman.binaryconverter.application.converter.structure.InvalidBinaryStructureException;
+import org.antman.binaryconverter.application.util.FileHandler;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException, InvalidBinaryStructureException {
         Encoder encoder = new Encoder();
 
 
-        BinaryStructure structure = new BinaryStructure();
-        structure.addIntElement();
-        structure.addFloatElement();
-        structure.addLoopElement(9, 1);
-        structure.addCharElement();
+        BinaryStructure structure = BinaryStructure.getInstance(new File("structure.txt"));
 
-        File file = new File("C:/Users/shaul/desktop/decoded.txt");
+        FileHandler handler = new FileHandler();
+//        File file = new File("C:/Users/shaul/desktop/decoded.txt");
+        String binaryString = handler.extractTextFromFile(new File("output.dat"));
+        Decoder decoder = new Decoder();
+        List<String> result = decoder.decode(structure,binaryString);
+        System.out.println(Arrays.toString(result.toArray()));
 
-
-        Encoder encoder1 = new Encoder();
-        String binaryResult = encoder1.encoded(file, structure);
-
-
-        System.out.println(encoder1.getStructure());
-        System.out.println(encoder1.getBinaryToStore());
-        FileHandler fileHandler = new FileHandler("output.dat");
-//        String toBeconverted = encoder.getBinaryToStore().substring(0, 32);
-//        System.out.println(convertBinaryToInt(toBeconverted));
-        System.out.println(binaryResult);
-        fileHandler.writeToTheFile(encoder1.getBinaryToStore());
-        Decoder decoder = new
-                Decoder(encoder.getStructure(), encoder.getBinaryToStore());
+//        Encoder encoder1 = new Encoder();
+//        String binaryResult = encoder1.encoded(file, structure);
+//
+//
+//        System.out.println(encoder1.getStructure());
+//        System.out.println(encoder1.getBinaryToStore());
+//        FileHandler fileHandler = new FileHandler("output.dat");
+////        String toBeconverted = encoder.getBinaryToStore().substring(0, 32);
+////        System.out.println(convertBinaryToInt(toBeconverted));
+//        System.out.println(binaryResult);
+//        fileHandler.writeToTheFile(encoder1.getBinaryToStore());
+//        Decoder decoder = new
+//                Decoder(encoder.getStructure(), encoder.getBinaryToStore());
     }
 
 //    private static String convertIntToBinary(int value) {
