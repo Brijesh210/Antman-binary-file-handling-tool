@@ -29,8 +29,29 @@ public class LoopElement extends Element {
         this.numberOfElements = numberOfElements;
     }
 
+    public void setNumberOfElements(int numberOfElements){
+        this.numberOfElements = numberOfElements;
+    }
+
     public LoopElement(String var, int numberOfElements){
+        type = Type.LOOP;
         varName = var;
         this.numberOfElements = numberOfElements;
+    }
+
+    @Override
+    public String toString() {
+        String nOfIterations;
+        if(varName==null) nOfIterations = String.valueOf(numberOfLoops);
+        else nOfIterations=varName;
+        return type + "(" + nOfIterations + "," +  numberOfElements + ")";
+    }
+
+    public int getNumberOfLoops() {
+        return numberOfLoops;
+    }
+
+    public int getNumberOfElements() {
+        return numberOfElements;
     }
 }

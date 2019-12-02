@@ -6,6 +6,10 @@ public abstract  class Element {
 
     Type type;
 
+    public Type getType(){
+        return type;
+    }
+
     public static PrimitiveElement getIntElement(){
         PrimitiveElement element = new PrimitiveElement(Type.INT,32);
         return element;
@@ -49,6 +53,9 @@ public abstract  class Element {
             return name;
         }
 
+        public boolean isPrimitive(){
+            return this == Type.INT || this == Type.CHAR || this == Type.FLOAT;
+        }
     }
 
 
