@@ -29,6 +29,8 @@ public class PrimitiveElement extends Element {
     }
 
 
-
+    public int getSize(){
+        return size;
+    }
 
 }
