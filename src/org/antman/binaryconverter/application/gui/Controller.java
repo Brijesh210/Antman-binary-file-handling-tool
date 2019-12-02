@@ -3,42 +3,39 @@ package org.antman.binaryconverter.application.gui;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.IndexRange;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import sun.misc.FloatingDecimal;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Scanner;
 
 import static sun.java2d.cmm.ColorTransform.In;
+
+import java.util.HashMap;
+import java.util.ResourceBundle;
+
 
 public class Controller implements Initializable {
     @FXML
     public TextArea urlTextArea;
+    @FXML
+    public TextArea outputTextArea;
     @FXML
     public ComboBox<String> addComboBox;
     public ComboBox<Integer> comboBox2;
     public TextField textFieldOption;
     public TextArea textAreaOption;
     public ComboBox<String> varComboBox;
-
+    private HashMap<String,String> settingsMap;
 
     @FXML
     public VBox vbMenu;
@@ -52,6 +49,10 @@ public class Controller implements Initializable {
     //private BinaryFormat structure.addElementByName("loop","213");
     //ArrayList<Element> allElement
     //ArrayList<Element> variables
+//    menuOpenStructureFile(e -> {
+//        File selectedFile = fileChooser.showOpenDialog(primaryStage);
+//    });
+
     @FXML
     public void handleDragOver(DragEvent dragEvent) {
         if (dragEvent.getDragboard().hasFiles()) {
@@ -61,17 +62,18 @@ public class Controller implements Initializable {
 
     public void handleDragDrop(DragEvent dragEvent) {
         File file = dragEvent.getDragboard().getFiles().get(0);
-        String fileName = file.getAbsolutePath();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
-            String sr;
-            while ((sr = br.readLine()) != null) {
-                urlTextArea.appendText(sr + "\r\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println(file.getAbsolutePath());
+//        String fileName = file.getAbsolutePath();
+//        try {
+//            BufferedReader br = new BufferedReader(new FileReader(fileName));
+//            String sr;
+//            while ((sr = br.readLine()) != null) {
+//                urlTextArea.appendText(sr + "\r\n");
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        // System.out.println(file.getAbsolutePath());
+        urlTextArea.appendText(file.getAbsolutePath() + "\r\n");
     }
 
     @Override
@@ -92,8 +94,6 @@ public class Controller implements Initializable {
                 varComboBox.setVisible(false);
             }
         });
-
-
         fileChooser.setInitialDirectory(new File("c:\\"));     // save as open initial directory
     }
 
@@ -116,10 +116,10 @@ public class Controller implements Initializable {
     }
 
     private void addEndLoop(String str) {
-        if(flag == true) {
+        if (flag == true) {
             textAreaOption.appendText(addComboBox.getSelectionModel().getSelectedItem() + "\n");
             flag = false;
-        } else{
+        } else {
             Alert.display("Loop Must be include ");
             flag = false;
         }
@@ -127,7 +127,7 @@ public class Controller implements Initializable {
 
     private void addVar(String str) {
         String var = textFieldOption.getCharacters().toString();
-        if (!var.contains(" ") && !var.isEmpty()) {
+        if (!var.contains(" ") && !var.isEmpty() && var.matches(">[0-9]*$")) {
             varOption.addAll(var);
             textAreaOption.appendText(str + "(" + var + ")\n");
             textFieldOption.clear();
@@ -136,7 +136,8 @@ public class Controller implements Initializable {
         }
     }
 
-    private boolean flag= false;
+    private boolean flag = false;
+
     private void addLoop(String str) {
         String num = textFieldOption.getCharacters().toString();
         String varName = varComboBox.getValue();
@@ -145,7 +146,7 @@ public class Controller implements Initializable {
         try {
             if (num.matches("^[0-9]*$") && Integer.parseInt(num) < 10000) {   //&& Integer.parseInt(numOrVar +"") < 10000
                 textAreaOption.appendText(str + "(" + num + ")\n");
-                flag =true;
+                flag = true;
             }
         } catch (NumberFormatException e) {
             if (varName != null) {
@@ -160,7 +161,8 @@ public class Controller implements Initializable {
     }
 
     private void addPrimitive(String selectedItem) {
-        textAreaOption.appendText( selectedItem + "\n");
+        textAreaOption.appendText(selectedItem + "\n");
+
     }
 
     public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
@@ -171,7 +173,6 @@ public class Controller implements Initializable {
         try {
             File file = fileChooser.showSaveDialog(stage);
             fileChooser.setInitialDirectory(file.getParentFile()); // save chosen directory
-
             StringBuilder sb = new StringBuilder();
             sb.append(textAreaOption.getText());
             FileWriter fileWriter = new FileWriter(file);
@@ -180,8 +181,6 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     @FXML
@@ -207,4 +206,26 @@ public class Controller implements Initializable {
     }
 
 
+    public void menuOpenStructure(ActionEvent actionEvent) {
+//        Window stage = vbMenu.getScene().getWindow();
+        Window stage = vbMenu.getScene().getWindow();
+        fileChooser.setTitle("Save File");
+        fileChooser.setInitialFileName("structure");
+        File file = fileChooser.showOpenDialog(stage);
+        String fileName = file.getAbsolutePath();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(fileName));
+            String sr;
+            while ((sr = br.readLine()) != null) {
+                textAreaOption.appendText(sr + "\r\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void convertButtonOnMouseClicked(MouseEvent mouseEvent) {
+    }
+
 }
+
