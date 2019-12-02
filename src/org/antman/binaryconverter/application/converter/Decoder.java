@@ -1,17 +1,18 @@
 package org.antman.binaryconverter.application.converter;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.antman.binaryconverter.application.converter.structure.BinaryStructure;
+import org.antman.binaryconverter.application.converter.structure.Element;
+import org.antman.binaryconverter.application.converter.structure.PrimitiveElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Decoder {
 
-    private Map<String, Integer> structure = new LinkedHashMap<>();
 
-    private String inputString;
 
-    public Decoder(Map<String, Integer> structure, String inputString) {
-        this.structure = structure;
-        inputString = inputString;
+    public Decoder() {
+
     }
 
 //    public String decode(File file,BinaryStructure structure) {
@@ -28,10 +29,35 @@ public class Decoder {
 //        return "";
 //    }
 
-
-    public String getInputString() {
-        return inputString;
+    public List<String> decode(BinaryStructure structure, String binaryString){
+        List<String> result = new ArrayList<>();
+        int i = 0;
+        try {
+            while (binaryString.length() > 0 && i < structure.size()) {
+                Element.Type type = structure.get(i).getType();
+                if (type.isPrimitive()) {
+                    System.out.println(type);
+                    PrimitiveElement element = (PrimitiveElement) structure.get(i);
+                    String substring = binaryString.substring(0, element.getSize());
+                    if (type == Element.Type.INT) {
+                        result.add(String.valueOf(convertBinaryToInt(substring)));
+                        binaryString = binaryString.substring(element.getSize(), binaryString.length());
+                    } else if (type == Element.Type.CHAR) {
+                        result.add(convertBinaryToChar(substring) + "");
+                        binaryString = binaryString.substring(element.getSize(), binaryString.length());
+                    } else if (type == Element.Type.FLOAT) {
+                        result.add(convertBinaryToFloat(substring) + "");
+                        binaryString = binaryString.substring(element.getSize(), binaryString.length());
+                    }
+                }
+                i++;
+            }
+        }catch (StringIndexOutOfBoundsException e){
+            return result;
+        }
+        return result;
     }
+
 
     private int convertBinaryToInt(String binary) {
         char[] string = new char[32];
@@ -48,7 +74,7 @@ public class Decoder {
         return (int) l;
     }
 
-    private Float convertFromBinaryToFloat(String binary) {
+    private Float convertBinaryToFloat(String binary) {
         char[] string = new char[32];
         for (int i = 0; i < string.length; i++) {
             string[i] = '0';
