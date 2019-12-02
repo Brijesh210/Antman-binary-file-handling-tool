@@ -22,10 +22,7 @@ import sun.misc.FloatingDecimal;
 import javax.swing.*;
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Scanner;
+import java.util.*;
 
 import static sun.java2d.cmm.ColorTransform.In;
 
@@ -40,7 +37,7 @@ public class Controller implements Initializable {
     public TextField textFieldOption;
     public TextArea textAreaOption;
     public ComboBox<String> varComboBox;
-
+    private HashMap<String,String> settingsMap;
 
     @FXML
     public VBox vbMenu;
@@ -167,6 +164,7 @@ public class Controller implements Initializable {
 
     private void addPrimitive(String selectedItem) {
         textAreaOption.appendText(selectedItem + "\n");
+
     }
 
     public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
@@ -177,7 +175,6 @@ public class Controller implements Initializable {
         try {
             File file = fileChooser.showSaveDialog(stage);
             fileChooser.setInitialDirectory(file.getParentFile()); // save chosen directory
-
             StringBuilder sb = new StringBuilder();
             sb.append(textAreaOption.getText());
             FileWriter fileWriter = new FileWriter(file);
