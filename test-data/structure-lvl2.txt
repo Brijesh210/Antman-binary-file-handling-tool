@@ -1,0 +1,9 @@
+float
+loop(2)
+char
+endloop
+var(x)
+loop(x)
+int
+char
+endloop

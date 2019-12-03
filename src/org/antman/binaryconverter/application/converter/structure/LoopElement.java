@@ -17,33 +17,61 @@ public class LoopElement extends Element {
      */
     private int numberOfElements;
 
-    private String varName;
+    private BinaryStructure structure;
+
+    private int size = 0;
+
+    private int position;
+
+    void setSubStructure(BinaryStructure structure){
+        this.structure = (BinaryStructure) structure.subList(position+1,position+numberOfElements);
+    }
+    public int getSize(){
+        BinaryStructure subStructure = (BinaryStructure)structure.subList(position+1,position+numberOfElements);
+        return subStructure.size();
+    }
+    private VariableElement var;
     /**
      * Constructor
      * @param numberOfLoops Number of loop iterations
      * @param numberOfElements Number of elements inside the loop block
      */
-    public LoopElement(int numberOfLoops, int numberOfElements){
+    LoopElement(int numberOfLoops, int numberOfElements, int pos){
+        position = pos;
         this.type = Type.LOOP;
         this.numberOfLoops = numberOfLoops;
         this.numberOfElements = numberOfElements;
     }
 
+
+
     public void setNumberOfElements(int numberOfElements){
         this.numberOfElements = numberOfElements;
     }
 
-    public LoopElement(String var, int numberOfElements){
+    LoopElement(VariableElement var, int numberOfElements, int pos){
+        position = pos;
         type = Type.LOOP;
-        varName = var;
+        this.var = var;
         this.numberOfElements = numberOfElements;
+    }
+
+
+    @Override
+    public int getPosition() {
+        return position;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return position == ((LoopElement)obj).position;
     }
 
     @Override
     public String toString() {
         String nOfIterations;
-        if(varName==null) nOfIterations = String.valueOf(numberOfLoops);
-        else nOfIterations=varName;
+        if(var==null) nOfIterations = String.valueOf(numberOfLoops);
+        else nOfIterations=var.getVarName();
         return type + "(" + nOfIterations + "," +  numberOfElements + ")";
     }
 

@@ -18,87 +18,88 @@ import java.util.*;
  */
 public class BinaryStructure extends ArrayList<Element> {
 
-    ArrayList<String> declaredVariables;
-
-    //Test of loadFromFile
-//    public static void main(String[] args) throws FileNotFoundException{
-//        BinaryStructure structure = null;
-//        try {
-//            structure = BinaryStructure.getInstance(new File("C:/Users/Ismail/Desktop/Antman/structure1.txt"));
-//        } catch (InvalidBinaryStructureException e) {
-//            System.out.println(e.getMessage());
-//            return;
-//        }
-//        System.out.println(structure.size());
-//        for(Element e : structure){
-//            System.out.println(e.toString());
-//        }
-//    }
+    ArrayList<VariableElement> declaredVariables;
 
     public BinaryStructure() {
         declaredVariables = new ArrayList<>();
-
     }
 
     //todo
     public static BinaryStructure getInstance(List<String> listOfElements) throws InvalidBinaryStructureException {
         List<String> lines = listOfElements;
         BinaryStructure binaryStructure = new BinaryStructure();
-//        System.out.println(Arrays.toString(lines.toArray()));
         String regex = "\\(|\\)";
         int line = 1;
-        int loopCounter = -1;
-        boolean loopActive = false;
+        ArrayList<LoopElement> loops = new ArrayList<>();
+        int pos = -1;
         try {
             for (String el : lines) {
-
+                pos++;
                 String[] element = el.split(regex);
-                if (element.length == 1) {        //meaning element is a char float or int
-                    Element.Type type = Element.Type.valueOf(el.toUpperCase());
-                    if (type == Element.Type.ENDLOOP)
-                        if (!loopActive)
-                            throw new InvalidBinaryStructureException("Structure syntax error! EndLoop statement without a matching Loop statement on line " + line);
-                        else {
-                            LoopElement loopElement = (LoopElement)binaryStructure.get(binaryStructure.size() - 1 - loopCounter);
-                            loopElement.setNumberOfElements(loopCounter);
-                            binaryStructure.set(binaryStructure.size() - 1 - loopCounter,loopElement);
-                            loopCounter = -1;
-                            loopActive = false;
-                        }
-                    else if (type.isPrimitive())
-                        binaryStructure.add(new PrimitiveElement(type));
-                    else
-                        throw new InvalidBinaryStructureException("Structure syntax error! Invalid element type on line " + line);
+                //store the type
+                Element.Type type = Element.Type.valueOf(element[0].toUpperCase());
+                //Element is a primitive (char, float, int) or an endloop
+                if (element.length == 1) {
+                    if (type.isPrimitive()) {
+                        binaryStructure.add(new PrimitiveElement(type, pos));
+                        incrementLoops(loops);
+                    }
+                    //if endloop, check if there is a matching loop
+                    else if (type == Element.Type.ENDLOOP && !loops.isEmpty()) {
+                        LoopElement loopElement = loops.remove(loops.size()-1);//(LoopElement) binaryStructure.get(binaryStructure.size() - 1 - loopCounter);
+                        binaryStructure.set(loopElement.getPosition(), loopElement);
+                    } else
+                        throw new InvalidBinaryStructureException("Structure syntax error! EndLoop statement without a matching Loop statement on line " + line);
+                    //Element is a loop or a war
                 } else if (element.length == 2) {
-                    Element.Type type = Element.Type.valueOf(element[0].toUpperCase());
                     if (type == Element.Type.LOOP) {
-                        if(loopActive) throw new InvalidBinaryStructureException("Structure syntax error! Missing ENDLOOP between LOOP elements! See line " + line);
-                        if (binaryStructure.declaredVariables.contains(element[1])) {     //loop with var
-                            binaryStructure.addLoopElement(element[1], 0);
+                        incrementLoops(loops);
+                        //todo
+                        int varIndex = binaryStructure.declaredVariables.indexOf(new VariableElement(element[1],-1));
+                        if (varIndex>=0) {     //loop with var
+                            LoopElement le = new LoopElement(binaryStructure.declaredVariables.get(varIndex),0,pos);
+                            loops.add(le);
+                            binaryStructure.add(le);
                         } else {                                                             //loop with number
                             try {
-                                binaryStructure.addLoopElement(Integer.parseInt(element[1]), 0);
-                            }catch (IllegalArgumentException e){
+                                LoopElement le = new LoopElement(Integer.parseInt(element[1]),0,pos);
+                                loops.add(le);
+                                binaryStructure.add(le);
+                            } catch (IllegalArgumentException e) {
                                 throw new InvalidBinaryStructureException("Structure syntax error! Invalid LOOP parameter! See line " + line);
                             }
                         }
-                        loopActive = true;
                     } else if (type == Element.Type.VAR) {
                         String varName = element[1];
-                        binaryStructure.declaredVariables.add(varName);
-                        binaryStructure.add(new VariableElement(varName));
+                        binaryStructure.declaredVariables.add(new VariableElement(varName,pos));
+                        binaryStructure.add(new VariableElement(varName,pos));
+                        incrementLoops(loops);
                     } else
                         throw new InvalidBinaryStructureException("Structure syntax error! Invalid element on line " + line);
                 } else
                     throw new InvalidBinaryStructureException("Structure syntax error! Invalid element on line " + line);
                 line++;
-                if(loopActive) loopCounter++;
             }
         } catch (IllegalArgumentException e) {
             throw new InvalidBinaryStructureException("Structure syntax error! Invalid element on line " + line);
         }
-
         return binaryStructure;
+    }
+
+    private static void incrementLoops(ArrayList<LoopElement> loops) {
+        if(loops.isEmpty()) return;
+        for(LoopElement e : loops){
+            e.setNumberOfElements(e.getNumberOfElements() + 1);
+        }
+    }
+
+
+    public int getSize() {
+        int total = 0;
+        for (Element e : this) {
+            total+=e.getSize();
+        }
+        return total;
     }
 
     public static BinaryStructure getInstance(File file) throws FileNotFoundException, InvalidBinaryStructureException {
@@ -121,23 +122,19 @@ public class BinaryStructure extends ArrayList<Element> {
         this.add(PrimitiveElement.getFloatElement());
     }
 
-    public void addLoopElement(int numbeOfLoops, int numberOfElements) {
-        this.add(new LoopElement(numbeOfLoops, numberOfElements));
+    public void addLoopElementManually(int numbeOfLoops, int numberOfElements, int pos) {
+        LoopElement el = new LoopElement(numbeOfLoops, numberOfElements, pos);
+        el.setSubStructure(this);
+        this.add(el);
     }
 
-    public void addLoopElement(String varName, int numberOfElements) {
-        this.add(new LoopElement(varName, numberOfElements));
+    public LoopElement addLoopElementManually(VariableElement var, int numberOfElements, int pos) {
+        LoopElement element = new LoopElement(var, numberOfElements, pos);
+        this.add(element);
+        return element;
     }
 
 
-    /**
-     * @param name
-     * @param arg  if type == loop || var then arg is varname
-     *             if type==loop && variable with name arg doesn't exist then it is a number of iterations
-     */
-    public void addElementByName(String name, String arg) {
-        Element.Type type = Element.Type.valueOf(name.toUpperCase());
-    }
 
     @Override
     public String toString() {
