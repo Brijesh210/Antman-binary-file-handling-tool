@@ -1,9 +1,12 @@
-float
-loop(2)
+int
+int
+int
 char
-endloop
+char
+char
+float
+float
 var(x)
 loop(x)
-int
 char
 endloop

@@ -16,7 +16,7 @@ import java.util.*;
  * @version 1.1
  * @see Element
  */
-public class BinaryStructure extends ArrayList<Element> {
+public class BinaryStructure extends ArrayList<Element> implements List<Element>{
 
     ArrayList<VariableElement> declaredVariables;
 
@@ -104,7 +104,7 @@ public class BinaryStructure extends ArrayList<Element> {
 
     public static BinaryStructure getInstance(File file) throws FileNotFoundException, InvalidBinaryStructureException {
         FileHandler handler = new FileHandler();
-        List<String> lines = handler.extractLinesFromFile(file);
+        List<String> lines = handler.readLines(file);
         return BinaryStructure.getInstance(lines);
     }
 

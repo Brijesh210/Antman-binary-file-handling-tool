@@ -2,7 +2,7 @@ package org.antman.binaryconverter.application.converter.structure;
 
 
 
-public abstract  class Element {
+public abstract  class Element{
 
     Type type;
     public Type getType(){
