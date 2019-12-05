@@ -35,7 +35,12 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
         int pos = -1;
         try {
             for (String el : lines) {
-                el = el.replaceAll("  *","");
+                if(el.equals("")) {
+                    pos++;
+                    line++;
+                    continue;
+                }
+                el = el.replaceAll("  *|\t","");
                 pos++;
                 String[] element = el.split(regex);
                 //store the type

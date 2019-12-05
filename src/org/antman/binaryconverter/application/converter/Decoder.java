@@ -3,6 +3,7 @@ package org.antman.binaryconverter.application.converter;
 import org.antman.binaryconverter.application.converter.structure.*;
 
 import java.io.BufferedWriter;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -18,29 +19,33 @@ public class Decoder {
         int pos = start;
         int max = end;
         StringBuilder result = new StringBuilder();
-        while (buffer.hasRemaining() && pos < max) {
-            Element element = structure.remove(0);
-            Element.Type type = element.getType();
-            if (type.isPrimitive()) {
-                result.append(extractPrimitive(element, buffer)).append("\n");
-            } else if (type == Element.Type.VAR) {
-                int varInt = buffer.getInt();
-                result.append(varInt).append("\n");
-                variables.put(
-                        (VariableElement) element, varInt);
-            } else if (type == Element.Type.LOOP) {
-                LoopElement le = (LoopElement) element;
-                VariableElement var = le.getVar();
-                if(var!=null){
-                    le.setNumberOfLoops(variables.get(var));
+        try {
+            while (buffer.hasRemaining() && pos < max) {
+                Element element = structure.remove(0);
+                Element.Type type = element.getType();
+                if (type.isPrimitive()) {
+                    result.append(extractPrimitive(element, buffer)).append("\n");
+                } else if (type == Element.Type.VAR) {
+                    int varInt = buffer.getInt();
+                    result.append(varInt).append("\n");
+                    variables.put(
+                            (VariableElement) element, varInt);
+                } else if (type == Element.Type.LOOP) {
+                    LoopElement le = (LoopElement) element;
+                    VariableElement var = le.getVar();
+                    if (var != null) {
+                        le.setNumberOfLoops(variables.get(var));
+                    }
+                    result.append(loop(le, structure, buffer, 0));
+                    pos += le.getNumberOfElements();
+                    for (int i = 0; i < le.getNumberOfElements(); i++) {
+                        structure.remove(0);
+                    }
                 }
-                result.append(loop(le,structure,buffer,0));
-                pos += le.getNumberOfElements();
-                for(int i = 0; i < le.getNumberOfElements(); i++){
-                    structure.remove(0);
-                }
+                pos++;
             }
-            pos++;
+        }catch(BufferOverflowException e){
+            return result.toString();
         }
         return result.toString();
     }
