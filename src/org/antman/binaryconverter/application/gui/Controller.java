@@ -42,6 +42,7 @@ public class Controller implements Initializable {
     public Button exportButton;
     private HashMap<String, String> settingsMap;
 
+    private String tab = "";
     @FXML
     public CheckBox editableCheckBox;
 
@@ -54,7 +55,8 @@ public class Controller implements Initializable {
     @FXML
     private FileReader fileReader;
 
-    private boolean flag = false;
+    //private boolean flag = false;
+    private int counter = 0;
 
     @FXML
     public void handleDragOver(DragEvent dragEvent) {
@@ -116,12 +118,12 @@ public class Controller implements Initializable {
     }
 
     private void addEndLoop(String str) {
-        if (flag == true) {
-            textAreaOption.appendText(addComboBox.getSelectionModel().getSelectedItem() + "\n");
-            flag = false;
+        if (counter >= 1) {
+            tab = tab.substring(0,tab.length() - 2);
+            textAreaOption.appendText(tab + addComboBox.getSelectionModel().getSelectedItem() + "\n");
+            counter -=1;
         } else {
             Alert.display("Loop Must be include ");
-            flag = false;
         }
     }
 
@@ -130,13 +132,12 @@ public class Controller implements Initializable {
         System.out.println(var);
         if (!var.isEmpty() && !var.contains(" ") && !var.matches("^[0-9]*$")) {
             varOption.add(var);
-            textAreaOption.appendText(str + "(" + var + ")\n");
+            textAreaOption.appendText(tab + str + "(" + var + ")\n");
             textFieldOption.clear();
         } else {
             textFieldOption.clear();
         }
     }
-
 
     private void addLoop(String str) {
         String num = textFieldOption.getCharacters().toString();
@@ -145,33 +146,32 @@ public class Controller implements Initializable {
         System.out.println(num);
         try {
             if (num.matches("^[0-9]*$") && Integer.parseInt(num) < 10000) {   //&& Integer.parseInt(numOrVar +"") < 10000
-                textAreaOption.appendText(str + "(" + num + ")\n");
-                textFieldOption.clear();
-                flag = true;
+                textAreaOption.appendText(tab + str + "(" + num + ")\n");
             }
         } catch (NumberFormatException e) {
             if (varName != null) {
-                textAreaOption.appendText(str + "(" + varName + ")\n");
-                textFieldOption.clear();
-                flag = true;
+                textAreaOption.appendText(tab + str + "(" + varName + ")\n");
             }
         } finally {
+            textFieldOption.clear();
             varComboBox.setAccessibleText(varComboBox.getPromptText());
+            counter+=1;
+            tab += "  ";
         }
 
     }
 
+
+
     private void addPrimitive(String selectedItem) {
-//        if(flag == true) {
+        if(counter == 0) {
         textAreaOption.appendText(selectedItem + "\n");
-//        }
-//        else {
-//            if(selectedItem == "Loop"){
-//                textAreaOption.appendText("\t"+ selectedItem + "\n");
-//            }
-//            textAreaOption.appendText(selectedItem + "\n");
-//        }
+        }
+        else {
+            textAreaOption.appendText(tab + selectedItem + "\n");
+        }
     }
+
 
     public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
         Window stage = vbMenu.getScene().getWindow();
