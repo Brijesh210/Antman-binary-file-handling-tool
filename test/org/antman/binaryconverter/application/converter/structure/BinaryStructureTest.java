@@ -33,6 +33,19 @@ class BinaryStructureTest {
     }
 
     @Test
+    void testStructureWithSpaces(){
+        try {
+            structure = BinaryStructure.getInstance(new File("test-data\\structure\\structure-space.txt"));
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            fail();
+        } catch (InvalidBinaryStructureException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
+    @Test
     void getSize() {
         structure.addIntElement();
         structure.addCharElement();

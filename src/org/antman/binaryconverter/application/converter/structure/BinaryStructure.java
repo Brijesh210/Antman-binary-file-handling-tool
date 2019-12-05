@@ -27,6 +27,7 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
     //todo
     public static BinaryStructure getInstance(List<String> listOfElements) throws InvalidBinaryStructureException {
         List<String> lines = listOfElements;
+
         BinaryStructure binaryStructure = new BinaryStructure();
         String regex = "\\(|\\)";
         int line = 1;
@@ -34,6 +35,7 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
         int pos = -1;
         try {
             for (String el : lines) {
+                el = el.replaceAll("  *","");
                 pos++;
                 String[] element = el.split(regex);
                 //store the type
