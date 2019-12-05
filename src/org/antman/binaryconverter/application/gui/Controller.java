@@ -5,37 +5,47 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import org.antman.binaryconverter.application.converter.Decoder;
+import org.antman.binaryconverter.application.converter.structure.BinaryStructure;
+import org.antman.binaryconverter.application.converter.structure.InvalidBinaryStructureException;
+import org.antman.binaryconverter.application.util.FileHandler;
 
 import java.io.*;
 import java.net.URL;
 
-import static sun.java2d.cmm.ColorTransform.In;
-
-import java.util.HashMap;
-import java.util.ResourceBundle;
-
+import java.nio.ByteBuffer;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class Controller implements Initializable {
     @FXML
-    public TextArea urlTextArea;
+    public TextArea inputTextArea;
     @FXML
     public TextArea outputTextArea;
     @FXML
     public ComboBox<String> addComboBox;
     public ComboBox<Integer> comboBox2;
     public TextField textFieldOption;
-    public TextArea textAreaOption;
+    public TextArea structureInputArea;
     public ComboBox<String> varComboBox;
-    private HashMap<String,String> settingsMap;
+    public HBox buttonBox;
+    public Button convertButton;
+    public Button importButton;
+    public Button exportButton;
+    private HashMap<String, String> settingsMap;
+
+    private String tab = "";
+    @FXML
+    public CheckBox editableCheckBox;
 
     @FXML
     public VBox vbMenu;
@@ -43,15 +53,12 @@ public class Controller implements Initializable {
     ObservableList<String> optt = FXCollections.observableArrayList("Char", "Int", "Float", "Var", "Loop", "EndLoop");
     ObservableList<String> varOption = FXCollections.observableArrayList();
 
-    @FXML
-    private FileReader fileReader;
 
-    //private BinaryFormat structure.addElementByName("loop","213");
-    //ArrayList<Element> allElement
-    //ArrayList<Element> variables
-//    menuOpenStructureFile(e -> {
-//        File selectedFile = fileChooser.showOpenDialog(primaryStage);
-//    });
+    FileHandler handler;
+
+    //private boolean flag = false;
+    private int counter = 0;
+    private ArrayList<File> files;
 
     @FXML
     public void handleDragOver(DragEvent dragEvent) {
@@ -62,22 +69,20 @@ public class Controller implements Initializable {
 
     public void handleDragDrop(DragEvent dragEvent) {
         File file = dragEvent.getDragboard().getFiles().get(0);
-//        String fileName = file.getAbsolutePath();
+        files.add(file);
+//        FileHandler handler = new FileHandler();
 //        try {
-//            BufferedReader br = new BufferedReader(new FileReader(fileName));
-//            String sr;
-//            while ((sr = br.readLine()) != null) {
-//                urlTextArea.appendText(sr + "\r\n");
-//            }
-//        } catch (IOException e) {
+//            urlTextArea.appendText(handler.extractTextFromFile(file));
+//        } catch (FileNotFoundException e) {
 //            e.printStackTrace();
 //        }
-        // System.out.println(file.getAbsolutePath());
-        urlTextArea.appendText(file.getAbsolutePath() + "\r\n");
+        inputTextArea.appendText(file.getAbsolutePath() + "\n");
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        handler = new FileHandler();
+        files = new ArrayList<>();
         addComboBox.setItems(optt);
         varComboBox.setItems(varOption);
 
@@ -86,8 +91,10 @@ public class Controller implements Initializable {
             if (str.equals("Loop")) {
                 varComboBox.setVisible(true);
                 textFieldOption.setVisible(true);
+                textFieldOption.setPromptText("Enter Number Of Iteration");
             } else if (str.equals("Var")) {
                 textFieldOption.setVisible(true);
+                textFieldOption.setPromptText("Enter Variable Name");
                 varComboBox.setVisible(false);
             } else {
                 textFieldOption.setVisible(false);
@@ -116,27 +123,26 @@ public class Controller implements Initializable {
     }
 
     private void addEndLoop(String str) {
-        if (flag == true) {
-            textAreaOption.appendText(addComboBox.getSelectionModel().getSelectedItem() + "\n");
-            flag = false;
+        if (counter >= 1) {
+            tab = tab.substring(0, tab.length() - 2);
+            structureInputArea.appendText(tab + addComboBox.getSelectionModel().getSelectedItem() + "\n");
+            counter -= 1;
         } else {
             Alert.display("Loop Must be include ");
-            flag = false;
         }
     }
 
     private void addVar(String str) {
         String var = textFieldOption.getCharacters().toString();
-        if (!var.contains(" ") && !var.isEmpty() && var.matches(">[0-9]*$")) {
-            varOption.addAll(var);
-            textAreaOption.appendText(str + "(" + var + ")\n");
+        System.out.println(var);
+        if (!var.isEmpty() && !var.contains(" ") && !var.matches("^[0-9]*$")) {
+            varOption.add(var);
+            structureInputArea.appendText(tab + str + "(" + var + ")\n");
             textFieldOption.clear();
         } else {
             textFieldOption.clear();
         }
     }
-
-    private boolean flag = false;
 
     private void addLoop(String str) {
         String num = textFieldOption.getCharacters().toString();
@@ -145,25 +151,30 @@ public class Controller implements Initializable {
         System.out.println(num);
         try {
             if (num.matches("^[0-9]*$") && Integer.parseInt(num) < 10000) {   //&& Integer.parseInt(numOrVar +"") < 10000
-                textAreaOption.appendText(str + "(" + num + ")\n");
-                flag = true;
+                structureInputArea.appendText(tab + str + "(" + num + ")\n");
             }
         } catch (NumberFormatException e) {
             if (varName != null) {
-                textAreaOption.appendText(str + "(" + varName + ")\n");
-                textFieldOption.clear();
-                flag = true;
+                structureInputArea.appendText(tab + str + "(" + varName + ")\n");
             }
         } finally {
+            textFieldOption.clear();
             varComboBox.setAccessibleText(varComboBox.getPromptText());
+            counter += 1;
+            tab += "  ";
         }
 
     }
 
-    private void addPrimitive(String selectedItem) {
-        textAreaOption.appendText(selectedItem + "\n");
 
+    private void addPrimitive(String selectedItem) {
+        if (counter == 0) {
+            structureInputArea.appendText(selectedItem + "\n");
+        } else {
+            structureInputArea.appendText(tab + selectedItem + "\n");
+        }
     }
+
 
     public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
         Window stage = vbMenu.getScene().getWindow();
@@ -174,7 +185,7 @@ public class Controller implements Initializable {
             File file = fileChooser.showSaveDialog(stage);
             fileChooser.setInitialDirectory(file.getParentFile()); // save chosen directory
             StringBuilder sb = new StringBuilder();
-            sb.append(textAreaOption.getText());
+            sb.append(structureInputArea.getText());
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(sb.toString());
             fileWriter.close();
@@ -191,7 +202,7 @@ public class Controller implements Initializable {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String sr;
             while ((sr = br.readLine()) != null) {
-                textAreaOption.appendText(sr + "\r\n");
+                structureInputArea.appendText(sr + "\r\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -205,7 +216,6 @@ public class Controller implements Initializable {
         }
     }
 
-
     public void menuOpenStructure(ActionEvent actionEvent) {
 //        Window stage = vbMenu.getScene().getWindow();
         Window stage = vbMenu.getScene().getWindow();
@@ -217,7 +227,7 @@ public class Controller implements Initializable {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String sr;
             while ((sr = br.readLine()) != null) {
-                textAreaOption.appendText(sr + "\r\n");
+                structureInputArea.appendText(sr + "\r\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -225,8 +235,77 @@ public class Controller implements Initializable {
     }
 
     public void convertButtonOnMouseClicked(MouseEvent mouseEvent) {
+        List<String> structureList = Arrays.asList(structureInputArea.getText().split("\n"));
+        try {
+            System.out.println(files.size());
+            CountDownLatch latch = new CountDownLatch(files.size());
+            ArrayList<String> results = new ArrayList<>();
+            for (File file : files) {
+                new Thread(() -> {
+                    try {
+                        Decoder decoder = new Decoder();
+                        BinaryStructure structure = BinaryStructure.getInstance(structureList);
+                        System.out.println("Thread ");
+                        ByteBuffer buffer = handler.readBytesToBuffer(file);
+                        results.add(decoder.decode(structure, buffer));
+                        latch.countDown();
 
+                        System.out.println("Thread 2");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InvalidBinaryStructureException e) {
+                        //todo show error dialog
+                        System.out.println(e.getMessage());
+                    }
+                }).start();
+            }
+            latch.await(2*files.size(), TimeUnit.SECONDS);
+            for(int i = 0; i < files.size(); i++ ) {
+                outputTextArea.appendText("===============Decoded file - " + files.get(i).toString() + "===============\n");
+                outputTextArea.appendText(results.get(i) + "\n\n");
+            }
+        }  catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
+    /*
+    -------------------------------------------------------------------------------------------------
+            Enable Editing for Structure and Input File
+    -------------------------------------------------------------------------------------------------
+     */
+
+    public void editableCheck(ActionEvent actionEvent) {
+        if (editableCheckBox.isSelected()) {
+            inputTextArea.setEditable(true);
+            structureInputArea.setEditable(true);
+        } else {
+            inputTextArea.setEditable(false);
+            structureInputArea.setEditable(false);
+        }
+    }
+
+    /*
+    -------------------------------------------------------------------------------------------------
+            Clear Structure ,Input and Output text area
+    -------------------------------------------------------------------------------------------------
+     */
+    public void clearStuctureButton(MouseEvent mouseEvent) {
+        structureInputArea.clear();
+    }
+
+    public void clearAllButton(MouseEvent mouseEvent) {
+        structureInputArea.clear();
+        inputTextArea.clear();
+        outputTextArea.clear();
+    }
+
+    public void clearOutputButton(MouseEvent mouseEvent) {
+        outputTextArea.clear();
+    }
+
+    public void clearInputButton(MouseEvent mouseEvent) {
+        inputTextArea.clear();
+    }
 }
 
