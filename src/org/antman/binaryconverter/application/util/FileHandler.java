@@ -43,7 +43,6 @@ public class FileHandler {
     public ByteBuffer readBytesToBuffer(File file) throws IOException {
         InputStream inputStream = new FileInputStream(file);
         ByteBuffer buffer = ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
-        System.out.println(buffer.array().length);
         return buffer;
     }
 

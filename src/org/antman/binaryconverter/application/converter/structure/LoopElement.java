@@ -12,7 +12,7 @@ public class LoopElement extends Element {
     /**
      * Number of loop iterations
      */
-    private int numberOfLoops;
+    private Integer numberOfLoops;
     /**
      * Number of elements inside the loop block
      */
@@ -81,8 +81,8 @@ public class LoopElement extends Element {
     @Override
     public String toString() {
         String nOfIterations;
-        if (var == null) nOfIterations = String.valueOf(numberOfLoops);
-        else nOfIterations = var.getVarName();
+        if (numberOfLoops == null) nOfIterations = var.getVarName();
+        else nOfIterations = String.valueOf(numberOfLoops);
         return type + "(" + nOfIterations + "," + numberOfElements + ")";
     }
 

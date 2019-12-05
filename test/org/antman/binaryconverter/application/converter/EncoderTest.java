@@ -26,8 +26,8 @@ class EncoderTest {
             BinaryStructure structure = BinaryStructure.getInstance(structureFileTwo);
             String toEncode = handler.readAll(decodedFileTwo);
 //            System.out.println(toEncode);
-            byte[] bytes = new Encoder().getEncodedLvlTwo();
-            handler.writeBytes(bytes,new File("test-data\\encoded-lvl2.dat"));
+            byte[] bytes = new Encoder().getEncodedLvlFour();
+            handler.writeBytes(bytes,new File("test-data\\encoded\\encoded-lvl-4.dat"));
         } catch (IOException e) {
             fail(e.getMessage());
         } catch (InvalidBinaryStructureException e) {
