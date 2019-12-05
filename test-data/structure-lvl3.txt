@@ -1,8 +1,0 @@
-float
-loop(2)
-var(x)
-loop(x)
-int
-char
-endloop
-endloop

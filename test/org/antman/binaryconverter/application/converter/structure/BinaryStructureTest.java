@@ -46,17 +46,14 @@ class BinaryStructureTest {
         }
     }
     @Test
-    void getSize() {
+    void testStructure() {
         structure.addIntElement();
         structure.addCharElement();
-        structure.addLoopElementManually(2,2,structure.getSize());
+        structure.addLoopElementManually(2,2,2);
         structure.addCharElement();
-        structure.addLoopElementManually(3,1,structure.getSize());
+        structure.addLoopElementManually(3,1,4);
         structure.addIntElement();
 
-        int size = structure.getSize();
-        int correctSize = 31;
-        assertEquals(correctSize,size,size + " wrong");
 
     }
 

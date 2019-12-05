@@ -13,7 +13,7 @@ import java.util.*;
  * Holding a list of Elements
  *
  * @author Ismoil Atajanov
- * @version 1.1
+ * @version 3.0
  * @see Element
  */
 public class BinaryStructure extends ArrayList<Element> implements List<Element>{
@@ -24,7 +24,6 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
         declaredVariables = new ArrayList<>();
     }
 
-    //todo
     public static BinaryStructure getInstance(List<String> listOfElements) throws InvalidBinaryStructureException {
         List<String> lines = listOfElements;
 
@@ -100,15 +99,6 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
         }
     }
 
-
-    public int getSize() {
-        int total = 0;
-        for (Element e : this) {
-            total+=e.getSize();
-        }
-        return total;
-    }
-
     public static BinaryStructure getInstance(File file) throws FileNotFoundException, InvalidBinaryStructureException {
         FileHandler handler = new FileHandler();
         List<String> lines = handler.readLines(file);
@@ -131,17 +121,13 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
 
     public void addLoopElementManually(int numbeOfLoops, int numberOfElements, int pos) {
         LoopElement el = new LoopElement(numbeOfLoops, numberOfElements, pos);
-        el.setSubStructure(this);
         this.add(el);
     }
 
-    public LoopElement addLoopElementManually(VariableElement var, int numberOfElements, int pos) {
+    public void addLoopElementManually(VariableElement var, int numberOfElements, int pos) {
         LoopElement element = new LoopElement(var, numberOfElements, pos);
         this.add(element);
-        return element;
     }
-
-
 
     @Override
     public String toString() {

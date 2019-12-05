@@ -1,18 +1,22 @@
 package org.antman.binaryconverter.application.converter.structure;
 
+/**
+ * Element of type var
+ * Treated just like an integer, only the value is store
+ * For future use as a loop input
+ *
+ * @author Ismoil Atajanov
+ * @version 2.0
+ * @see Element
+ */
 public class VariableElement extends Element implements Comparable{
 
     private String varName;
     private int position;
-    private final int size = 4;
-    private int value = 0;
+
     public String getVarName(){
         return varName;
     }
-//    public void setValue(int value){
-//        this.value = value;
-//    }
-
 
     public VariableElement(String varName, int pos){
         position = pos;
@@ -25,9 +29,6 @@ public class VariableElement extends Element implements Comparable{
         return position;
     }
 
-    public int getSize(){
-        return size;
-    }
     @Override
     public String toString() {
         return "var("+varName+")";
@@ -37,7 +38,6 @@ public class VariableElement extends Element implements Comparable{
     public int compareTo(Object o) {
         return this.equals(o) ? 0 : -1;
     }
-
 
     @Override
     public boolean equals(Object obj) {

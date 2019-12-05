@@ -6,13 +6,17 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+/**
+ * Class providing basic file I/O methods
+ *
+ * @version 2.0
+ * @author Ismoil Atajanov
+ */
 public class FileHandler {
     public FileHandler(){
 
     }
     private PrintWriter writer;
-
 
     public String readAll(File file) throws FileNotFoundException {
         List<String> lines = readLines(file);
@@ -20,7 +24,7 @@ public class FileHandler {
         for(String line : lines) {
             sb.append(line+"\n");
         }
-        return sb.toString();
+        return sb.substring(0,sb.length()-1);
     }
 
     public List<String> readLines(File file) throws FileNotFoundException {
@@ -40,6 +44,14 @@ public class FileHandler {
             return true;
         } else return false;
     }
+
+    /**
+     * Read all bytes from a file
+     *
+     * @param file file to read from
+     * @return a ByteBuffer containing all the bytes
+     * @throws IOException if the file is not found
+     */
     public ByteBuffer readBytesToBuffer(File file) throws IOException {
         InputStream inputStream = new FileInputStream(file);
         ByteBuffer buffer = ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
@@ -50,6 +62,7 @@ public class FileHandler {
         OutputStream outputStream = new FileOutputStream(file);
         outputStream.write(bytes);
     }
+
     public void write(String text, File file) throws IOException {
         writer = new PrintWriter(new FileWriter(file));
         writer.println(text);

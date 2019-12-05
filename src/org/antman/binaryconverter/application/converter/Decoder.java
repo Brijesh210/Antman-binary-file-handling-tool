@@ -1,21 +1,23 @@
 package org.antman.binaryconverter.application.converter;
 
 import org.antman.binaryconverter.application.converter.structure.*;
-
-import java.io.BufferedWriter;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+/**
+ * Decoder class, allows conversion from binary file to a text file
+ * Using a know list of elements inside the file as a BinaryStructure object
+ * @see BinaryStructure
+ * @author Ismoil Atajanov
+ * @version 2.0
+ */
 public class Decoder {
 
-    TreeMap<VariableElement, Integer> variables;
+    private TreeMap<VariableElement, Integer> variables;
+    private final String SEPARATOR = " ";
 
-    public Decoder() {
-
-    }
-
-    public String decodePiece(BinaryStructure structure, ByteBuffer buffer, int start, int end) {
+    private String decodePiece(BinaryStructure structure, ByteBuffer buffer, int start, int end) {
         int pos = start;
         int max = end;
         StringBuilder result = new StringBuilder();
@@ -24,10 +26,10 @@ public class Decoder {
                 Element element = structure.remove(0);
                 Element.Type type = element.getType();
                 if (type.isPrimitive()) {
-                    result.append(extractPrimitive(element, buffer)).append("\n");
+                    result.append(extractPrimitive(element, buffer)).append(SEPARATOR);
                 } else if (type == Element.Type.VAR) {
                     int varInt = buffer.getInt();
-                    result.append(varInt).append("\n");
+                    result.append(varInt).append(SEPARATOR);
                     variables.put(
                             (VariableElement) element, varInt);
                 } else if (type == Element.Type.LOOP) {
@@ -38,8 +40,8 @@ public class Decoder {
                     }
                     result.append(loop(le, structure, buffer, 0));
                     pos += le.getNumberOfElements();
-                    for (int i = 0; i < le.getNumberOfElements(); i++) {
-                        structure.remove(0);
+                    if (le.getNumberOfElements() > 0) {
+                        structure.subList(0, le.getNumberOfElements()).clear();
                     }
                 }
                 pos++;
@@ -47,7 +49,7 @@ public class Decoder {
         }catch(BufferOverflowException e){
             return result.toString();
         }
-        return result.toString();
+        return result.substring(0,result.length()-1);
     }
 
     private String loop(LoopElement le, BinaryStructure structure, ByteBuffer buffer, int nl){
@@ -56,19 +58,19 @@ public class Decoder {
             for(int j = nl; j < nl + le.getNumberOfElements() && buffer.hasRemaining(); j++){
                 Element element = structure.get(j);
                 if(element.getType().isPrimitive()){
-                    result.append(extractPrimitive(element,buffer)).append("\n");
+                    result.append(extractPrimitive(element,buffer)).append(SEPARATOR);
                 } else if (element.getType() == Element.Type.VAR) {
                     int varInt = buffer.getInt();
                     variables.put(
                             (VariableElement) element, varInt );
-                    result.append(varInt).append("\n");
+                    result.append(varInt).append(SEPARATOR);
                 } else if (element.getType() == Element.Type.LOOP) {
                     LoopElement lee = (LoopElement) element;
                     VariableElement var = lee.getVar();
                     if(var!=null){
                         lee.setNumberOfLoops(variables.get(var));
                     }
-                    result.append(loop(lee,structure,buffer,j+1)).append("\n");
+                    result.append(loop(lee,structure,buffer,j+1)).append(SEPARATOR);
                     j += le.getNumberOfElements();
                 }
             }

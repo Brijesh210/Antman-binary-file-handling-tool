@@ -1,17 +1,23 @@
 package org.antman.binaryconverter.application.converter.structure;
 
 
-
+/**
+ * Base class representing elements of the binary file
+ * Integer, Float, Character, Loop, Variable
+ *
+ * @author Ismoil Atajanov
+ * @version 3.0
+ * @see LoopElement
+ * @see PrimitiveElement
+ * @see VariableElement
+ * @see Element.Type
+ */
 public abstract  class Element{
 
     Type type;
     public Type getType(){
         return type;
     }
-
-    public abstract int getPosition();
-    public abstract int getSize();
-    public int getSize(BinaryStructure structure){return 0;}
     public static PrimitiveElement getIntElement(){
         PrimitiveElement element = new PrimitiveElement(Type.INT,32);
         return element;
@@ -26,8 +32,7 @@ public abstract  class Element{
         PrimitiveElement element = new PrimitiveElement(Type.FLOAT,32);
         return element;
     }
-
-
+    public abstract int getPosition();
 
     @Override
     public String toString() {
