@@ -39,6 +39,21 @@ public class Encoder {
         return buffer.array();
     }
 
+    public byte[] getEncodedLvlFour(){
+        Random random = new Random();
+        ByteBuffer buffer = ByteBuffer.allocate(82);
+        // 10 1 a a a 2 b b b 3 c c c 4 d d d 5 e e e 6 f f f 7 g g g 8 h h h 9 i i i 10 j j j
+        buffer.putInt(10);
+        for(int i = 0; i < 10; i++){
+            buffer.putInt(i);
+            for(int j = 0; j < 3; j++) {
+                buffer.put((byte) ('a'));
+            }
+        }
+        buffer.putFloat(6.6f).putFloat(7.7f);
+        return buffer.array();
+    }
+
     @Deprecated
     public List<Byte> getEncodedLvlTwo(List<String> toEncode, BinaryStructure binaryStructure) {
 //        ArrayList<Byte> bytes = new ArrayList<>();

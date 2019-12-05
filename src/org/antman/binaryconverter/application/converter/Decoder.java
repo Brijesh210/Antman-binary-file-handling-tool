@@ -14,7 +14,6 @@ public class Decoder {
 
     }
 
-
     public String decodePiece(BinaryStructure structure, ByteBuffer buffer, int start, int end) {
         int pos = start;
         int max = end;
@@ -23,10 +22,10 @@ public class Decoder {
             Element element = structure.remove(0);
             Element.Type type = element.getType();
             if (type.isPrimitive()) {
-                result.append(extractPrimitive(element, buffer));
+                result.append(extractPrimitive(element, buffer)).append("\n");
             } else if (type == Element.Type.VAR) {
                 int varInt = buffer.getInt();
-                result.append(varInt).append(" ");
+                result.append(varInt).append("\n");
                 variables.put(
                         (VariableElement) element, varInt);
             } else if (type == Element.Type.LOOP) {
@@ -35,8 +34,8 @@ public class Decoder {
                 if(var!=null){
                     le.setNumberOfLoops(variables.get(var));
                 }
-                result.append(loop(le,structure,buffer));
-                pos += le.getNumberOfElements() - 1;
+                result.append(loop(le,structure,buffer,0));
+                pos += le.getNumberOfElements();
                 for(int i = 0; i < le.getNumberOfElements(); i++){
                     structure.remove(0);
                 }
@@ -46,24 +45,26 @@ public class Decoder {
         return result.toString();
     }
 
-    private String loop(LoopElement le, BinaryStructure structure, ByteBuffer buffer){
+    private String loop(LoopElement le, BinaryStructure structure, ByteBuffer buffer, int nl){
         StringBuilder result = new StringBuilder();
         for(int i = 0; i < le.getNumberOfLoops() && buffer.hasRemaining(); i++){
-            for(int j = 0; j < le.getNumberOfElements() && buffer.hasRemaining(); j++){
+            for(int j = nl; j < nl + le.getNumberOfElements() && buffer.hasRemaining(); j++){
                 Element element = structure.get(j);
                 if(element.getType().isPrimitive()){
-                    result.append(extractPrimitive(element,buffer));
+                    result.append(extractPrimitive(element,buffer)).append("\n");
                 } else if (element.getType() == Element.Type.VAR) {
+                    int varInt = buffer.getInt();
                     variables.put(
-                            (VariableElement) element, buffer.getInt());
+                            (VariableElement) element, varInt );
+                    result.append(varInt).append("\n");
                 } else if (element.getType() == Element.Type.LOOP) {
                     LoopElement lee = (LoopElement) element;
                     VariableElement var = lee.getVar();
                     if(var!=null){
                         lee.setNumberOfLoops(variables.get(var));
                     }
-                    result.append(loop(lee,structure,buffer));
-                    j += le.getNumberOfElements() - 1;
+                    result.append(loop(lee,structure,buffer,j+1)).append("\n");
+                    j += le.getNumberOfElements();
                 }
             }
         }
@@ -71,9 +72,9 @@ public class Decoder {
     }
     private String extractPrimitive(Element element, ByteBuffer buffer) {
         if (element.getType() == Element.Type.FLOAT) {
-            return String.valueOf(buffer.getFloat()) + " ";
+            return String.valueOf(buffer.getFloat());
         } else if (element.getType() == Element.Type.INT) {
-            return String.valueOf(buffer.getInt()) + " ";
+            return String.valueOf(buffer.getInt());
         } else {
             return String.valueOf((char) buffer.get());
         }
