@@ -2,14 +2,16 @@ package org.antman.binaryconverter.application.converter.structure;
 
 
 
-public abstract  class Element {
+public abstract  class Element{
 
     Type type;
-
     public Type getType(){
         return type;
     }
 
+    public abstract int getPosition();
+    public abstract int getSize();
+    public int getSize(BinaryStructure structure){return 0;}
     public static PrimitiveElement getIntElement(){
         PrimitiveElement element = new PrimitiveElement(Type.INT,32);
         return element;

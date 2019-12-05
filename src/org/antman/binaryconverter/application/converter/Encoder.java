@@ -4,14 +4,14 @@ package org.antman.binaryconverter.application.converter;
 import org.antman.binaryconverter.application.converter.structure.BinaryStructure;
 import org.antman.binaryconverter.application.converter.structure.Element;
 import org.antman.binaryconverter.application.converter.structure.LoopElement;
+import org.antman.binaryconverter.application.converter.structure.VariableElement;
 import org.antman.binaryconverter.application.util.FileHandler;
+import org.antman.binaryconverter.application.util.Utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 
 /***
@@ -19,153 +19,77 @@ import java.util.Set;
  */
 public class Encoder {
 
-    private String binaryToStore;
-
-    private Map<String, Integer> structure = new LinkedHashMap<>();
-
     private FileHandler fileHandler = new FileHandler();
-    private static int counter = 0;
 
-    Encoder() {
-        binaryToStore = "";
+
+    public Encoder() {
+    }
+
+    /**
+     *
+     *
+     */
+    public byte[] getEncodedLvlTwo(){
+        ByteBuffer buffer = ByteBuffer.allocate(30);
+        //int int int char char char float float var(x) loop(x) char endloop
+        buffer.putInt(5).putInt(6).putInt(7).put((byte)'c').put((byte)'r').put((byte)'y');
+        buffer.putFloat(6.6f).putFloat(7.7f);
+        buffer.putInt(3);
+        buffer.put((byte)'x').put((byte)'y').put((byte)'z');
+        return buffer.array();
+    }
+
+    @Deprecated
+    public List<Byte> getEncodedLvlTwo(List<String> toEncode, BinaryStructure binaryStructure) {
+//        ArrayList<Byte> bytes = new ArrayList<>();
+//        int size = toEncode.size();
+//        System.out.println(Arrays.toString(toEncode.toArray()));
+//        for (int i = 0; i < size && !binaryStructure.isEmpty(); i++) {
+//            Element element = binaryStructure.remove(0);
+//            System.out.println(toEncode.get(0));
+//            if (element.getType() == Element.Type.CHAR) {
+//                char c;
+//                if (toEncode.get(0).equals("")) {
+//                    c = ' ';
+//                } else c = toEncode.get(0).toCharArray()[0];
+//                bytes.add((byte) c);
+//                toEncode.remove(0);
+//            } else if (element.getType() == Element.Type.INT
+//                    || element.getType() == Element.Type.VAR) {
+//                byte[] intBytes = Utils.intToBytes(Integer.parseInt(toEncode.get(0)));
+//                bytes.add(intBytes[0]);
+//                bytes.add(intBytes[1]);
+//                bytes.add(intBytes[2]);
+//                bytes.add(intBytes[3]);
+//                toEncode.remove(0);
+//                if(element.getType() == Element.Type.VAR) {
+//                    VariableElement var = (VariableElement)element;
+//                    var.setValue(Integer.parseInt(toEncode.get(0)));
+//                }
+//            } else if (element.getType() == Element.Type.FLOAT) {
+//                byte[] floatBytes = Utils.floatToBytes(Float.parseFloat(toEncode.get(0)));
+//                bytes.add(floatBytes[0]);
+//                bytes.add(floatBytes[1]);
+//                bytes.add(floatBytes[2]);
+//                bytes.add(floatBytes[3]);
+//                toEncode.remove(0);
+//            } else if (element.getType() == Element.Type.LOOP) {
+//                LoopElement le = (LoopElement)element;
+//                BinaryStructure subStructure = (BinaryStructure) binaryStructure.subList(0, le.getPosition() + le.getNumberOfElements());
+//                List<String> subString = toEncode.subList(0,le.getNumberOfElements());
+//                for(int l = 0; l < le.getNumberOfLoops(); l++){
+//                    bytes.addAll(getEncodedLvlTwo(subString,subStructure));
+//                }
+//            }
+//        }
+        return null;
+    }
+    @Deprecated
+    public List<Byte> getEncodedLvlTwo(File file, BinaryStructure binaryStructure) throws FileNotFoundException {
+        List<String> toEncode = fileHandler.readLines(file);
+        return getEncodedLvlTwo(toEncode,binaryStructure);
     }
 
 
-    public Map<String, Integer> getStructure() {
-        return structure;
-    }
 
-    public String encoded(File file, BinaryStructure binaryStructure) {
-
-        List<String> stringList;
-        try {
-            stringList = fileHandler.extractLinesFromFile(file);
-            System.out.println(stringList.toString());
-
-            for (int i = 0; i < stringList.size(); i++) {
-
-                Element.Type typeS = binaryStructure.get(i).getType();
-
-                System.out.println(typeS);
-                switch (typeS) {
-                    case INT:
-                        encode(Integer.parseInt(stringList.get(i)));
-                        break;
-                    case FLOAT:
-                        encode(Float.valueOf(stringList.get(i)));
-                        break;
-                    case CHAR:
-                        encode(stringList.get(i).charAt(0));
-                        break;
-                    case LOOP:
-                        LoopElement element = (LoopElement) binaryStructure.get(i);
-                        looping(element.getNumberOfLoops(), stringList.get(i),
-                                binaryStructure.get(i + 1).getType().getName());
-                        break;
-                    default:
-                        break;
-                }
-
-                System.out.println(stringList.get(i));
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("the exception thrown is " + e.getMessage());
-        }
-        return "";
-    }
-
-    public char[] looping(int num, String nextLine, String type) {
-
-        char[] array = new char[num];
-        System.out.println(type);
-        for (int i = 0; i < num; i++) {
-
-            array[i] = nextLine.charAt(i);
-            encode(array[i]);
-        }
-
-        return array;
-    }
-
-
-    public <T> void encode(T value) {
-        String temp = "";
-        if (value instanceof Integer) {
-            int val = (Integer) value;
-            temp = convertIntToBinary(val);
-            structure.put("integer", ++counter);
-        } else if (value instanceof Double)
-            System.out.println("double");
-            //TODO: fix this for double
-        else if (value instanceof Float) {
-            float val = (Float) value;
-            temp = convertFloatToBinary(val);
-            structure.put("float", ++counter);
-        } else if (value instanceof Character) {
-            System.out.println("was charachter");
-            char val;
-            val = (Character) value;
-            temp = convertCharToBinary(val);
-            structure.put("char", ++counter);
-        } else if (value instanceof Set)
-            System.out.println("Set! ");
-        //TODO: fix this also for other data-type
-        binaryToStore = binaryToStore + temp;
-    }
-
-    public String getBinaryToStore() {
-        return binaryToStore;
-    }
-
-    private String convertIntToBinary(int value) {
-        char[] string = new char[32];
-        for (int i = 0; i < string.length; i++) {
-            string[i] = '0';
-        }
-        String binary = String.valueOf(string);
-        if (value < 256 && value > 0) {
-
-            String outputString = Integer.toBinaryString(value);
-            String newString = binary.substring(0, binary.length() - outputString.length());
-            newString = newString + outputString;
-            return newString;
-        } else if (value > 255) {
-            String outputString = Integer.toBinaryString(value);
-            String newString = binary.substring(0, binary.length() - outputString.length());
-            newString = newString + outputString;
-            return newString;
-        } else {
-            return Integer.toBinaryString(value);
-        }
-    }
-
-    private String convertFloatToBinary(float myFloat) {
-        char[] string = new char[32];
-        for (int i = 0; i < string.length; i++) {
-            string[i] = '0';
-        }
-        String binary = String.valueOf(string);
-        int bits = Float.floatToIntBits(myFloat);
-        String myString = Integer.toBinaryString(bits);
-
-
-        String newString = binary.substring(0, binary.length() - myString.length());
-        newString = newString + myString;
-        return newString;
-
-    }
-
-
-    private String convertCharToBinary(char myChar) {
-        char[] string = new char[32];
-        for (int i = 0; i < string.length; i++) {
-            string[i] = '0';
-        }
-        String binaryIn = String.valueOf(string);
-        String binary = Integer.toBinaryString(myChar);
-        String newString = binaryIn.substring(0, binaryIn.length() - binary.length());
-        newString = newString + binary;
-        binary = newString;
-        return binary;
-    }
 }

@@ -1,12 +1,11 @@
 package org.antman.binaryconverter.application.util;
 
-
+import org.apache.commons.io.IOUtils;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 public class FileHandler {
     public FileHandler(){
@@ -15,8 +14,8 @@ public class FileHandler {
     private PrintWriter writer;
 
 
-    public String extractTextFromFile(File file) throws FileNotFoundException {
-        List<String> lines = extractLinesFromFile(file);
+    public String readAll(File file) throws FileNotFoundException {
+        List<String> lines = readLines(file);
         StringBuilder sb = new StringBuilder();
         for(String line : lines) {
             sb.append(line+"\n");
@@ -24,7 +23,7 @@ public class FileHandler {
         return sb.toString();
     }
 
-    public List<String> extractLinesFromFile(File file) throws FileNotFoundException {
+    public List<String> readLines(File file) throws FileNotFoundException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
         return bufferedReader.lines().collect(Collectors.toList());
     }
@@ -41,7 +40,17 @@ public class FileHandler {
             return true;
         } else return false;
     }
+    public ByteBuffer readBytesToBuffer(File file) throws IOException {
+        InputStream inputStream = new FileInputStream(file);
+        ByteBuffer buffer = ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
+        System.out.println(buffer.array().length);
+        return buffer;
+    }
 
+    public void writeBytes(byte[] bytes,File file) throws IOException {
+        OutputStream outputStream = new FileOutputStream(file);
+        outputStream.write(bytes);
+    }
     public void write(String text, File file) throws IOException {
         writer = new PrintWriter(new FileWriter(file));
         writer.println(text);

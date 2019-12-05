@@ -1,0 +1,12 @@
+int
+int
+int
+char
+char
+char
+float
+float
+var(x)
+loop(x)
+char
+endloop
