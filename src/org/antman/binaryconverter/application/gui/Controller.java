@@ -6,35 +6,36 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import org.antman.binaryconverter.application.converter.Decoder;
+import org.antman.binaryconverter.application.converter.structure.BinaryStructure;
+import org.antman.binaryconverter.application.converter.structure.InvalidBinaryStructureException;
+import org.antman.binaryconverter.application.util.FileHandler;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.URL;
 
-import static sun.java2d.cmm.ColorTransform.In;
-
-import java.util.HashMap;
-import java.util.ResourceBundle;
+import java.nio.ByteBuffer;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class Controller implements Initializable {
     @FXML
-    public TextArea urlTextArea;
+    public TextArea inputTextArea;
     @FXML
     public TextArea outputTextArea;
     @FXML
     public ComboBox<String> addComboBox;
     public ComboBox<Integer> comboBox2;
     public TextField textFieldOption;
-    public TextArea textAreaOption;
+    public TextArea structureInputArea;
     public ComboBox<String> varComboBox;
     public HBox buttonBox;
     public Button convertButton;
@@ -52,11 +53,12 @@ public class Controller implements Initializable {
     ObservableList<String> optt = FXCollections.observableArrayList("Char", "Int", "Float", "Var", "Loop", "EndLoop");
     ObservableList<String> varOption = FXCollections.observableArrayList();
 
-    @FXML
-    private FileReader fileReader;
+
+    FileHandler handler;
 
     //private boolean flag = false;
     private int counter = 0;
+    private ArrayList<File> files;
 
     @FXML
     public void handleDragOver(DragEvent dragEvent) {
@@ -67,17 +69,20 @@ public class Controller implements Initializable {
 
     public void handleDragDrop(DragEvent dragEvent) {
         File file = dragEvent.getDragboard().getFiles().get(0);
+        files.add(file);
 //        FileHandler handler = new FileHandler();
 //        try {
 //            urlTextArea.appendText(handler.extractTextFromFile(file));
 //        } catch (FileNotFoundException e) {
 //            e.printStackTrace();
 //        }
-        urlTextArea.appendText(file.getAbsolutePath() + "\n");
+        inputTextArea.appendText(file.getAbsolutePath() + "\n");
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        handler = new FileHandler();
+        files = new ArrayList<>();
         addComboBox.setItems(optt);
         varComboBox.setItems(varOption);
 
@@ -119,9 +124,9 @@ public class Controller implements Initializable {
 
     private void addEndLoop(String str) {
         if (counter >= 1) {
-            tab = tab.substring(0,tab.length() - 2);
-            textAreaOption.appendText(tab + addComboBox.getSelectionModel().getSelectedItem() + "\n");
-            counter -=1;
+            tab = tab.substring(0, tab.length() - 2);
+            structureInputArea.appendText(tab + addComboBox.getSelectionModel().getSelectedItem() + "\n");
+            counter -= 1;
         } else {
             Alert.display("Loop Must be include ");
         }
@@ -132,7 +137,7 @@ public class Controller implements Initializable {
         System.out.println(var);
         if (!var.isEmpty() && !var.contains(" ") && !var.matches("^[0-9]*$")) {
             varOption.add(var);
-            textAreaOption.appendText(tab + str + "(" + var + ")\n");
+            structureInputArea.appendText(tab + str + "(" + var + ")\n");
             textFieldOption.clear();
         } else {
             textFieldOption.clear();
@@ -146,29 +151,27 @@ public class Controller implements Initializable {
         System.out.println(num);
         try {
             if (num.matches("^[0-9]*$") && Integer.parseInt(num) < 10000) {   //&& Integer.parseInt(numOrVar +"") < 10000
-                textAreaOption.appendText(tab + str + "(" + num + ")\n");
+                structureInputArea.appendText(tab + str + "(" + num + ")\n");
             }
         } catch (NumberFormatException e) {
             if (varName != null) {
-                textAreaOption.appendText(tab + str + "(" + varName + ")\n");
+                structureInputArea.appendText(tab + str + "(" + varName + ")\n");
             }
         } finally {
             textFieldOption.clear();
             varComboBox.setAccessibleText(varComboBox.getPromptText());
-            counter+=1;
+            counter += 1;
             tab += "  ";
         }
 
     }
 
 
-
     private void addPrimitive(String selectedItem) {
-        if(counter == 0) {
-        textAreaOption.appendText(selectedItem + "\n");
-        }
-        else {
-            textAreaOption.appendText(tab + selectedItem + "\n");
+        if (counter == 0) {
+            structureInputArea.appendText(selectedItem + "\n");
+        } else {
+            structureInputArea.appendText(tab + selectedItem + "\n");
         }
     }
 
@@ -182,7 +185,7 @@ public class Controller implements Initializable {
             File file = fileChooser.showSaveDialog(stage);
             fileChooser.setInitialDirectory(file.getParentFile()); // save chosen directory
             StringBuilder sb = new StringBuilder();
-            sb.append(textAreaOption.getText());
+            sb.append(structureInputArea.getText());
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(sb.toString());
             fileWriter.close();
@@ -199,7 +202,7 @@ public class Controller implements Initializable {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String sr;
             while ((sr = br.readLine()) != null) {
-                textAreaOption.appendText(sr + "\r\n");
+                structureInputArea.appendText(sr + "\r\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -224,7 +227,7 @@ public class Controller implements Initializable {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String sr;
             while ((sr = br.readLine()) != null) {
-                textAreaOption.appendText(sr + "\r\n");
+                structureInputArea.appendText(sr + "\r\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -232,6 +235,38 @@ public class Controller implements Initializable {
     }
 
     public void convertButtonOnMouseClicked(MouseEvent mouseEvent) {
+        List<String> structureList = Arrays.asList(structureInputArea.getText().split("\n"));
+        try {
+            System.out.println(files.size());
+            CountDownLatch latch = new CountDownLatch(files.size());
+            ArrayList<String> results = new ArrayList<>();
+            for (File file : files) {
+                new Thread(() -> {
+                    try {
+                        Decoder decoder = new Decoder();
+                        BinaryStructure structure = BinaryStructure.getInstance(structureList);
+                        System.out.println("Thread ");
+                        ByteBuffer buffer = handler.readBytesToBuffer(file);
+                        results.add(decoder.decode(structure, buffer));
+                        latch.countDown();
+
+                        System.out.println("Thread 2");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InvalidBinaryStructureException e) {
+                        //todo show error dialog
+                        System.out.println(e.getMessage());
+                    }
+                }).start();
+            }
+            latch.await(2*files.size(), TimeUnit.SECONDS);
+            for(int i = 0; i < files.size(); i++ ) {
+                outputTextArea.appendText("===============Decoded file - " + files.get(i).toString() + "===============\n");
+                outputTextArea.appendText(results.get(i) + "\n\n");
+            }
+        }  catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -242,11 +277,11 @@ public class Controller implements Initializable {
 
     public void editableCheck(ActionEvent actionEvent) {
         if (editableCheckBox.isSelected()) {
-            urlTextArea.setEditable(true);
-            textAreaOption.setEditable(true);
+            inputTextArea.setEditable(true);
+            structureInputArea.setEditable(true);
         } else {
-            urlTextArea.setEditable(false);
-            textAreaOption.setEditable(false);
+            inputTextArea.setEditable(false);
+            structureInputArea.setEditable(false);
         }
     }
 
@@ -256,12 +291,12 @@ public class Controller implements Initializable {
     -------------------------------------------------------------------------------------------------
      */
     public void clearStuctureButton(MouseEvent mouseEvent) {
-        textAreaOption.clear();
+        structureInputArea.clear();
     }
 
     public void clearAllButton(MouseEvent mouseEvent) {
-        textAreaOption.clear();
-        urlTextArea.clear();
+        structureInputArea.clear();
+        inputTextArea.clear();
         outputTextArea.clear();
     }
 
@@ -270,7 +305,7 @@ public class Controller implements Initializable {
     }
 
     public void clearInputButton(MouseEvent mouseEvent) {
-        urlTextArea.clear();
+        inputTextArea.clear();
     }
 }
 

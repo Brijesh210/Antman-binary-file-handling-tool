@@ -104,7 +104,7 @@
                                                     <items>
                                                         <AnchorPane>
                                                             <children>
-                                                                <TextArea fx:id="textAreaOption" editable="false"
+                                                                <TextArea fx:id="structureInputArea" editable="false"
                                                                           onDragDropped="#onDragDroppedStructure"
                                                                           onDragOver="#onDragOverStructure"
                                                                           prefHeight="517.0" prefWidth="271.0"
@@ -207,7 +207,7 @@
                                                 <Label alignment="CENTER" layoutX="245.0" layoutY="4.0"
                                                        prefHeight="26.0" text="Input File" AnchorPane.leftAnchor="0.0"
                                                        AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                                                <TextArea fx:id="urlTextArea" editable="false"
+                                                <TextArea fx:id="inputTextArea" editable="false"
                                                           onDragDropped="#handleDragDrop" onDragOver="#handleDragOver"
                                                           prefHeight="223.0" prefWidth="552.0"
                                                           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
