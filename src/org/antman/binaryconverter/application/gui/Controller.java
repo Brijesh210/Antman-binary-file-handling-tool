@@ -5,16 +5,18 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.URL;
 
@@ -22,7 +24,6 @@ import static sun.java2d.cmm.ColorTransform.In;
 
 import java.util.HashMap;
 import java.util.ResourceBundle;
-
 
 public class Controller implements Initializable {
     @FXML
@@ -35,7 +36,14 @@ public class Controller implements Initializable {
     public TextField textFieldOption;
     public TextArea textAreaOption;
     public ComboBox<String> varComboBox;
-    private HashMap<String,String> settingsMap;
+    public HBox buttonBox;
+    public Button convertButton;
+    public Button importButton;
+    public Button exportButton;
+    private HashMap<String, String> settingsMap;
+
+    @FXML
+    public CheckBox editableCheckBox;
 
     @FXML
     public VBox vbMenu;
@@ -46,12 +54,7 @@ public class Controller implements Initializable {
     @FXML
     private FileReader fileReader;
 
-    //private BinaryFormat structure.addElementByName("loop","213");
-    //ArrayList<Element> allElement
-    //ArrayList<Element> variables
-//    menuOpenStructureFile(e -> {
-//        File selectedFile = fileChooser.showOpenDialog(primaryStage);
-//    });
+    private boolean flag = false;
 
     @FXML
     public void handleDragOver(DragEvent dragEvent) {
@@ -62,18 +65,13 @@ public class Controller implements Initializable {
 
     public void handleDragDrop(DragEvent dragEvent) {
         File file = dragEvent.getDragboard().getFiles().get(0);
-//        String fileName = file.getAbsolutePath();
+//        FileHandler handler = new FileHandler();
 //        try {
-//            BufferedReader br = new BufferedReader(new FileReader(fileName));
-//            String sr;
-//            while ((sr = br.readLine()) != null) {
-//                urlTextArea.appendText(sr + "\r\n");
-//            }
-//        } catch (IOException e) {
+//            urlTextArea.appendText(handler.extractTextFromFile(file));
+//        } catch (FileNotFoundException e) {
 //            e.printStackTrace();
 //        }
-        // System.out.println(file.getAbsolutePath());
-        urlTextArea.appendText(file.getAbsolutePath() + "\r\n");
+        urlTextArea.appendText(file.getAbsolutePath() + "\n");
     }
 
     @Override
@@ -86,8 +84,10 @@ public class Controller implements Initializable {
             if (str.equals("Loop")) {
                 varComboBox.setVisible(true);
                 textFieldOption.setVisible(true);
+                textFieldOption.setPromptText("Enter Number Of Iteration");
             } else if (str.equals("Var")) {
                 textFieldOption.setVisible(true);
+                textFieldOption.setPromptText("Enter Variable Name");
                 varComboBox.setVisible(false);
             } else {
                 textFieldOption.setVisible(false);
@@ -127,8 +127,9 @@ public class Controller implements Initializable {
 
     private void addVar(String str) {
         String var = textFieldOption.getCharacters().toString();
-        if (!var.contains(" ") && !var.isEmpty() && var.matches(">[0-9]*$")) {
-            varOption.addAll(var);
+        System.out.println(var);
+        if (!var.isEmpty() && !var.contains(" ") && !var.matches("^[0-9]*$")) {
+            varOption.add(var);
             textAreaOption.appendText(str + "(" + var + ")\n");
             textFieldOption.clear();
         } else {
@@ -136,7 +137,6 @@ public class Controller implements Initializable {
         }
     }
 
-    private boolean flag = false;
 
     private void addLoop(String str) {
         String num = textFieldOption.getCharacters().toString();
@@ -146,6 +146,7 @@ public class Controller implements Initializable {
         try {
             if (num.matches("^[0-9]*$") && Integer.parseInt(num) < 10000) {   //&& Integer.parseInt(numOrVar +"") < 10000
                 textAreaOption.appendText(str + "(" + num + ")\n");
+                textFieldOption.clear();
                 flag = true;
             }
         } catch (NumberFormatException e) {
@@ -161,8 +162,15 @@ public class Controller implements Initializable {
     }
 
     private void addPrimitive(String selectedItem) {
+//        if(flag == true) {
         textAreaOption.appendText(selectedItem + "\n");
-
+//        }
+//        else {
+//            if(selectedItem == "Loop"){
+//                textAreaOption.appendText("\t"+ selectedItem + "\n");
+//            }
+//            textAreaOption.appendText(selectedItem + "\n");
+//        }
     }
 
     public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
@@ -205,7 +213,6 @@ public class Controller implements Initializable {
         }
     }
 
-
     public void menuOpenStructure(ActionEvent actionEvent) {
 //        Window stage = vbMenu.getScene().getWindow();
         Window stage = vbMenu.getScene().getWindow();
@@ -225,8 +232,45 @@ public class Controller implements Initializable {
     }
 
     public void convertButtonOnMouseClicked(MouseEvent mouseEvent) {
-
     }
 
+    /*
+    -------------------------------------------------------------------------------------------------
+            Enable Editing for Structure and Input File
+    -------------------------------------------------------------------------------------------------
+     */
+
+    public void editableCheck(ActionEvent actionEvent) {
+        if (editableCheckBox.isSelected()) {
+            urlTextArea.setEditable(true);
+            textAreaOption.setEditable(true);
+        } else {
+            urlTextArea.setEditable(false);
+            textAreaOption.setEditable(false);
+        }
+    }
+
+    /*
+    -------------------------------------------------------------------------------------------------
+            Clear Structure ,Input and Output text area
+    -------------------------------------------------------------------------------------------------
+     */
+    public void clearStuctureButton(MouseEvent mouseEvent) {
+        textAreaOption.clear();
+    }
+
+    public void clearAllButton(MouseEvent mouseEvent) {
+        textAreaOption.clear();
+        urlTextArea.clear();
+        outputTextArea.clear();
+    }
+
+    public void clearOutputButton(MouseEvent mouseEvent) {
+        outputTextArea.clear();
+    }
+
+    public void clearInputButton(MouseEvent mouseEvent) {
+        urlTextArea.clear();
+    }
 }
 
