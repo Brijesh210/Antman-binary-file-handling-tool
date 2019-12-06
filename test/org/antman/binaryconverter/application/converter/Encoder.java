@@ -1,14 +1,11 @@
 package org.antman.binaryconverter.application.converter;
 
-import org.antman.binaryconverter.application.converter.structure.BinaryStructure;
-import org.antman.binaryconverter.application.converter.structure.InvalidBinaryStructureException;
 import org.antman.binaryconverter.application.util.FileHandler;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +15,7 @@ class Encoder {
     FileHandler handler = new FileHandler();
 
     @Test
-    void encode() {
+    void testEncodeOne() {
         try {
             byte[] actualBytes = getEncodedLvlFour();
             byte[] expectedBytes = handler.readBytesToBuffer(
@@ -28,6 +25,24 @@ class Encoder {
         } catch (IOException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    void testEncodeTwo(){
+        try {
+            byte[] actualBytes = getEncodedLvlFive();
+            byte[] expectedBytes = handler.readBytesToBuffer(
+                    new File("test-data\\encoded\\expected\\encoded-lvl-5.bin")).array();
+            handler.writeBytes(actualBytes,new File("test-data\\encoded\\generated\\encoded-lvl-5.bin"));
+            assertArrayEquals(expectedBytes,actualBytes,"Encoded bytes are not what expected!");
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    void testEncodeThree(){
+        //test with line breaks
     }
 
     private byte[] getEncodedLvlFour(){
@@ -45,13 +60,28 @@ class Encoder {
         return buffer.array();
     }
 
-    private byte[] getEncodedLvlTwo(){
-        ByteBuffer buffer = ByteBuffer.allocate(30);
-        //int int int char char char float float var(x) loop(x) char endloop
-        buffer.putInt(5).putInt(6).putInt(7).put((byte)'c').put((byte)'r').put((byte)'y');
-        buffer.putFloat(6.6f).putFloat(7.7f);
-        buffer.putInt(3);
-        buffer.put((byte)'x').put((byte)'y').put((byte)'z');
+    private byte[] getEncodedLvlFive(){
+        ByteBuffer buffer = ByteBuffer.allocate(178);
+        //var(i) loop(i) int float char
+        buffer.putInt(5);
+        for(int i = 0; i < 5; i++){
+            putString("start", buffer);
+            for(int j = 0; j < 2; j++) {
+                buffer.put((byte)('a' + i+j));
+                for(int k = 0; k < 3; k++){
+                    buffer.putInt(i+j+k);
+                }
+            }
+            putString("end",buffer);
+        }
+        buffer.putFloat(35353.5353f);
         return buffer.array();
+    }
+
+    private void putString(String s, ByteBuffer buffer){
+        char[] sss = s.toCharArray();
+        for(char ss : sss){
+            buffer.put((byte)ss);
+        }
     }
 }

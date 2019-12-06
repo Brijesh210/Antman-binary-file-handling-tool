@@ -40,8 +40,8 @@ public class Decoder {
                     }
                     result.append(loop(le, structure, buffer, 0));
                     pos += le.getNumberOfElements();
-                    if (le.getNumberOfElements() > 0) {
-                        structure.subList(0, le.getNumberOfElements()).clear();
+                    for (int i = 0; i < le.getNumberOfElements(); i++) {
+                        structure.remove(0);
                     }
                 }
                 pos++;
@@ -71,7 +71,7 @@ public class Decoder {
                         lee.setNumberOfLoops(variables.get(var));
                     }
                     result.append(loop(lee,structure,buffer,j+1)).append(SEPARATOR);
-                    j += le.getNumberOfElements();
+                    j += lee.getNumberOfElements();
                 }
             }
         }

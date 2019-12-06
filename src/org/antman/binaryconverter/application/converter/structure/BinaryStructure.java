@@ -54,6 +54,7 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
                     else if (type == Element.Type.ENDLOOP && !loops.isEmpty()) {
                         LoopElement loopElement = loops.remove(loops.size()-1);//(LoopElement) binaryStructure.get(binaryStructure.size() - 1 - loopCounter);
                         binaryStructure.set(loopElement.getPosition(), loopElement);
+                        pos--;
                     } else
                         throw new InvalidBinaryStructureException("Structure syntax error! EndLoop statement without a matching Loop statement on line " + line);
                     //Element is a loop or a war
