@@ -7,32 +7,36 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="688.0" prefWidth="1122.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.antman.binaryconverter.application.gui.Controller">
+<AnchorPane prefHeight="688.0" prefWidth="1122.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.antman.binaryconverter.application.gui.Controller">
     <children>
-        <VBox fx:id="vbMenu" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-              AnchorPane.topAnchor="0.0">
+        <VBox fx:id="vbMenu" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <MenuBar layoutX="6.0" layoutY="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                         AnchorPane.topAnchor="0.0">
+                <MenuBar layoutX="6.0" layoutY="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <menus>
-                        <Menu mnemonicParsing="false" text="File">
+                        <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
                             <items>
-                                <MenuItem fx:id="menuOpenStructureFile" mnemonicParsing="false"
-                                          onAction="#menuOpenStructure" text="Open Stucture File"/>
-                                <MenuItem fx:id="menuOpenInputFile" mnemonicParsing="false" text="Open Input File"/>
-                                <MenuItem fx:id="menuSaveStructure" mnemonicParsing="false" text="Save As Stucture"/>
-                                <MenuItem fx:id="menuSaveOutput" mnemonicParsing="false" text="Save As Output"/>
+                                <MenuItem fx:id="menuOpenStructureFile" mnemonicParsing="false" onAction="#menuOpenStructure" text="Open Stucture File" />
+                                <MenuItem fx:id="menuOpenInputFile" mnemonicParsing="false" onAction="#inputFileOpenMenu" text="Open Input File" />
+                                <MenuItem fx:id="menuSaveStructure" mnemonicParsing="false" text="Save Stucture" />
+                                <MenuItem fx:id="menuSaveOutput" mnemonicParsing="false" text="Save Output" />
+                        <Menu fx:id="openRecentMenu" mnemonicParsing="false" onAction="#openRecentMenuOnAction" text="Recent Structure File">
+                          
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Recent Input File">
+                          <items>
+                            <MenuItem mnemonicParsing="false" text="Action 1" />
+                          </items>
+                        </Menu>
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Edit">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="Delete"/>
+                                <MenuItem mnemonicParsing="false" text="Delete" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Help">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="About"/>
+                                <MenuItem mnemonicParsing="false" text="About" />
                             </items>
                         </Menu>
                     </menus>
@@ -41,108 +45,60 @@
                     <items>
                         <AnchorPane nodeOrientation="LEFT_TO_RIGHT">
                             <children>
-                                <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="875.0"
-                                           prefWidth="735.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="875.0" prefWidth="735.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <items>
                                         <SplitPane dividerPositions="0.5">
                                             <items>
                                                 <AnchorPane>
                                                     <children>
-                                                        <VBox layoutY="30.0" AnchorPane.leftAnchor="20.0"
-                                                              AnchorPane.rightAnchor="20.0">
+                                                        <VBox layoutY="30.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
                                                             <children>
-                                                                <ComboBox fx:id="addComboBox" layoutX="9.0"
-                                                                          maxWidth="1.7976931348623157E308"
-                                                                          onMouseClicked="#comboBoxMouseKeyPressed"
-                                                                          promptText="Select one"
-                                                                          AnchorPane.leftAnchor="5.0"
-                                                                          AnchorPane.rightAnchor="5.0"
-                                                                          AnchorPane.topAnchor="5.0"
-                                                                          VBox.vgrow="ALWAYS">
+                                                                <ComboBox fx:id="addComboBox" layoutX="9.0" maxWidth="1.7976931348623157E308" onMouseClicked="#comboBoxMouseKeyPressed" promptText="Select one" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" VBox.vgrow="ALWAYS">
                                                                     <cursor>
-                                                                        <Cursor fx:constant="HAND"/>
+                                                                        <Cursor fx:constant="HAND" />
                                                                     </cursor>
                                                                 </ComboBox>
-                                                                <ComboBox fx:id="varComboBox" layoutX="14.0"
-                                                                          layoutY="36.0"
-                                                                          maxWidth="1.7976931348623157E308"
-                                                                          promptText="Select Variable" visible="false"/>
-                                                                <TextField fx:id="textFieldOption" layoutX="10.0"
-                                                                           layoutY="67.0"
-                                                                           maxWidth="1.7976931348623157E308"
-                                                                           promptText="Number Of Iteration"
-                                                                           visible="false"/>
-                                                                <ComboBox fx:id="comboBox2" editable="true"
-                                                                          layoutX="14.0" layoutY="107.0"
-                                                                          maxWidth="1.7976931348623157E308"
-                                                                          promptText="Add Iteration" visible="false"/>
-                                                                <Button fx:id="buttonAdd" layoutX="13.0" layoutY="138.0"
-                                                                        maxWidth="1.7976931348623157E308"
-                                                                        mnemonicParsing="false"
-                                                                        onMouseClicked="#buttonAddMouseClicked"
-                                                                        text="Add">
+                                                                <ComboBox fx:id="varComboBox" layoutX="14.0" layoutY="36.0" maxWidth="1.7976931348623157E308" promptText="Select Variable" visible="false" />
+                                                                <TextField fx:id="textFieldOption" layoutX="10.0" layoutY="67.0" maxWidth="1.7976931348623157E308" promptText="Number Of Iteration" visible="false" />
+                                                                <ComboBox fx:id="comboBox2" editable="true" layoutX="14.0" layoutY="107.0" maxWidth="1.7976931348623157E308" promptText="Add Iteration" visible="false" />
+                                                                <Button fx:id="buttonAdd" layoutX="13.0" layoutY="138.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#buttonAddMouseClicked" text="Add">
                                                                     <cursor>
-                                                                        <Cursor fx:constant="HAND"/>
+                                                                        <Cursor fx:constant="HAND" />
                                                                     </cursor>
                                                                     <effect>
-                                                                        <DropShadow/>
+                                                                        <DropShadow />
                                                                     </effect>
                                                                 </Button>
                                                             </children>
                                                         </VBox>
-                                                        <CheckBox fx:id="editableCheckBox" layoutX="160.0"
-                                                                  layoutY="520.0" mnemonicParsing="false"
-                                                                  onAction="#editableCheck" text="Editable"
-                                                                  AnchorPane.bottomAnchor="21.0"
-                                                                  AnchorPane.leftAnchor="161.0"
-                                                                  AnchorPane.rightAnchor="30.0"/>
+                                                        <CheckBox fx:id="editableCheckBox" layoutX="160.0" layoutY="520.0" mnemonicParsing="false" onAction="#editableCheck" text="Editable" AnchorPane.bottomAnchor="21.0" AnchorPane.leftAnchor="161.0" AnchorPane.rightAnchor="30.0" />
                                                     </children>
                                                 </AnchorPane>
-                                                <SplitPane dividerPositions="0.0" nodeOrientation="LEFT_TO_RIGHT"
-                                                           orientation="VERTICAL">
+                                                <SplitPane dividerPositions="0.0" nodeOrientation="LEFT_TO_RIGHT" orientation="VERTICAL">
                                                     <items>
                                                         <AnchorPane>
                                                             <children>
-                                                                <TextArea fx:id="structureInputArea" editable="false"
-                                                                          onDragDropped="#onDragDroppedStructure"
-                                                                          onDragOver="#onDragOverStructure"
-                                                                          prefHeight="517.0" prefWidth="271.0"
-                                                                          AnchorPane.bottomAnchor="0.0"
-                                                                          AnchorPane.leftAnchor="0.0"
-                                                                          AnchorPane.rightAnchor="0.0"
-                                                                          AnchorPane.topAnchor="26.0">
+                                                                <TextArea fx:id="structureInputArea" editable="false" onDragDropped="#onDragDroppedStructure" onDragOver="#onDragOverStructure" prefHeight="517.0" prefWidth="271.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
                                                                     <padding>
-                                                                        <Insets bottom="5.0" left="5.0" right="5.0"
-                                                                                top="5.0"/>
+                                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                                     </padding>
                                                                 </TextArea>
-                                                                <Label alignment="CENTER" contentDisplay="CENTER"
-                                                                       maxHeight="26.0" text="Structure"
-                                                                       AnchorPane.leftAnchor="0.0"
-                                                                       AnchorPane.rightAnchor="0.0"
-                                                                       AnchorPane.topAnchor="0.0"/>
+                                                                <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="26.0" text="Structure" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                                             </children>
                                                         </AnchorPane>
                                                         <HBox layoutX="-5.0" layoutY="-11.0" maxHeight="35.0">
                                                             <children>
-                                                                <Button maxWidth="1.7976931348623157E308"
-                                                                        mnemonicParsing="false" text="Verify"
-                                                                        HBox.hgrow="ALWAYS">
+                                                                <Button fx:id="verifyButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#verifyButtonClicked" text="Verify" HBox.hgrow="ALWAYS">
                                                                     <effect>
-                                                                        <DropShadow/>
+                                                                        <DropShadow />
                                                                     </effect>
                                                                     <HBox.margin>
-                                                                        <Insets/>
+                                                                        <Insets />
                                                                     </HBox.margin>
                                                                 </Button>
-                                                                <Button fx:id="saveAsStructure" layoutX="101.0"
-                                                                        layoutY="-2.0" maxWidth="1.7976931348623157E308"
-                                                                        mnemonicParsing="false"
-                                                                        onMouseClicked="#saveAsStructureOnMouseClicked"
-                                                                        text="Save Structure" HBox.hgrow="ALWAYS">
+                                                                <Button fx:id="saveAsStructure" layoutX="101.0" layoutY="-2.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#saveAsStructureOnMouseClicked" text="Save Structure" HBox.hgrow="ALWAYS">
                                                                     <effect>
-                                                                        <DropShadow/>
+                                                                        <DropShadow />
                                                                     </effect>
                                                                 </Button>
                                                             </children>
@@ -153,41 +109,21 @@
                                         </SplitPane>
                                         <AnchorPane maxHeight="80.0">
                                             <children>
-                                                <GridPane layoutX="122.0" layoutY="190.0" minHeight="82.0"
-                                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <GridPane layoutX="122.0" layoutY="190.0" minHeight="82.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                     <columnConstraints>
-                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
-                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
-                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                                                     </columnConstraints>
                                                     <rowConstraints>
-                                                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-                                                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+                                                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                                                     </rowConstraints>
                                                     <children>
-                                                        <Button fx:id="clearAll" layoutX="153.0" layoutY="233.0"
-                                                                maxWidth="1.7976931348623157E308"
-                                                                mnemonicParsing="false" onMouseClicked="#clearAllButton"
-                                                                text="Clear All" GridPane.columnIndex="2"
-                                                                GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"/>
-                                                        <Button fx:id="clearOutput" layoutX="393.0" layoutY="258.0"
-                                                                maxWidth="1.7976931348623157E308"
-                                                                mnemonicParsing="false"
-                                                                onMouseClicked="#clearOutputButton" text="Clear Output"
-                                                                GridPane.columnIndex="2" GridPane.hgrow="ALWAYS"/>
-                                                        <Button fx:id="clearStructure" layoutX="257.0" layoutY="258.0"
-                                                                maxWidth="1.7976931348623157E308"
-                                                                mnemonicParsing="false"
-                                                                onMouseClicked="#clearStuctureButton"
-                                                                text="Clear Structure" GridPane.columnIndex="1"
-                                                                GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"/>
-                                                        <Button fx:id="clearInput" layoutX="361.0" layoutY="196.0"
-                                                                maxWidth="1.7976931348623157E308"
-                                                                mnemonicParsing="false"
-                                                                onMouseClicked="#clearInputButton" text="Clear Input"
-                                                                GridPane.columnIndex="1" GridPane.halignment="LEFT"
-                                                                GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER"/>
+                                                        <Button fx:id="clearAll" layoutX="153.0" layoutY="233.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#clearAllButton" text="Clear All" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                                                        <Button fx:id="clearOutput" layoutX="393.0" layoutY="258.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#clearOutputButton" text="Clear Output" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" />
+                                                        <Button fx:id="clearStructure" layoutX="257.0" layoutY="258.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#clearStructureButton" text="Clear Structure" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                                                        <Button fx:id="clearInput" layoutX="361.0" layoutY="196.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#clearInputButton" text="Clear Input" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" />
                                                     </children>
                                                 </GridPane>
                                             </children>
@@ -198,68 +134,46 @@
                         </AnchorPane>
                         <AnchorPane>
                             <children>
-                                <SplitPane dividerPositions="0.5, 0.5" orientation="VERTICAL" prefHeight="200.0"
-                                           prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <SplitPane dividerPositions="0.5, 0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <items>
                                         <AnchorPane>
                                             <children>
-                                                <Label alignment="CENTER" layoutX="245.0" layoutY="4.0"
-                                                       prefHeight="26.0" text="Input File" AnchorPane.leftAnchor="0.0"
-                                                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                                                <TextArea fx:id="inputTextArea" editable="false"
-                                                          onDragDropped="#handleDragDrop" onDragOver="#handleDragOver"
-                                                          prefHeight="223.0" prefWidth="552.0"
-                                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+                                                <Label alignment="CENTER" layoutX="245.0" layoutY="4.0" prefHeight="26.0" text="Input File" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                <TextArea fx:id="inputTextArea" editable="false" onDragDropped="#handleDragDrop" onDragOver="#handleDragOver" prefHeight="223.0" prefWidth="552.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
                                                     <opaqueInsets>
-                                                        <Insets/>
+                                                        <Insets />
                                                     </opaqueInsets>
                                                     <padding>
-                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                     </padding>
                                                 </TextArea>
                                             </children>
                                         </AnchorPane>
                                         <HBox fx:id="buttonBox" SplitPane.resizableWithParent="false">
                                             <children>
-                                                <Button fx:id="importButton" alignment="CENTER"
-                                                        maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                                                        text="Import" AnchorPane.bottomAnchor="0.0"
-                                                        AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"
-                                                        HBox.hgrow="ALWAYS">
+                                                <Button fx:id="importButton" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#importButtonClicked" text="Import" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" HBox.hgrow="ALWAYS">
                                                     <effect>
-                                                        <DropShadow/>
+                                                        <DropShadow />
                                                     </effect>
                                                 </Button>
-                                                <Button fx:id="convertButton" layoutX="218.0" layoutY="-1.0"
-                                                        maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                                                        onMouseClicked="#convertButtonOnMouseClicked" text="Convert"
-                                                        AnchorPane.leftAnchor="0.0" HBox.hgrow="ALWAYS">
+                                                <Button fx:id="convertButton" layoutX="218.0" layoutY="-1.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#convertButtonOnMouseClicked" text="Convert" AnchorPane.leftAnchor="0.0" HBox.hgrow="ALWAYS">
                                                     <effect>
-                                                        <DropShadow/>
+                                                        <DropShadow />
                                                     </effect>
                                                 </Button>
-                                                <Button fx:id="exportButton" layoutX="368.0" layoutY="5.0"
-                                                        maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                                                        text="Export" HBox.hgrow="ALWAYS">
+                                                <Button fx:id="exportButton" layoutX="368.0" layoutY="5.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onMouseClicked="#exportButtonClicked" text="Export" HBox.hgrow="ALWAYS">
                                                     <effect>
-                                                        <DropShadow/>
+                                                        <DropShadow />
                                                     </effect>
                                                 </Button>
                                             </children>
                                         </HBox>
                                         <AnchorPane>
                                             <children>
-                                                <Label alignment="CENTER" layoutX="1.0" layoutY="2.0" prefHeight="26.0"
-                                                       text="Output File" AnchorPane.leftAnchor="0.0"
-                                                       AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-                                                <TextArea fx:id="outputTextArea" editable="false" layoutY="25.0"
-                                                          prefHeight="235.0" prefWidth="552.0"
-                                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                                                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+                                                <Label alignment="CENTER" layoutX="1.0" layoutY="2.0" prefHeight="26.0" text="Output File" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                <TextArea fx:id="outputTextArea" editable="false" layoutY="25.0" prefHeight="235.0" prefWidth="552.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
                                                     <padding>
-                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                     </padding>
                                                 </TextArea>
                                             </children>

@@ -48,17 +48,69 @@ public class Controller implements Initializable {
     public CheckBox editableCheckBox;
 
     @FXML
+    public Button verifyButton;
+    @FXML
     public VBox vbMenu;
     FileChooser fileChooser = new FileChooser();
     ObservableList<String> optt = FXCollections.observableArrayList("Char", "Int", "Float", "Var", "Loop", "EndLoop");
     ObservableList<String> varOption = FXCollections.observableArrayList();
-
 
     FileHandler handler;
 
     //private boolean flag = false;
     private int counter = 0;
     private ArrayList<File> files;
+
+    //------------------------------------------------
+    // Recent file creator
+    //--------------------------
+    File recentFile = new File("C:\\Users\\b___b\\Desktop\\ANTMAN-Binary\\abc\\antman_binary\\src\\org\\antman\\binaryconverter\\application\\gui\\files\\recentFile.txt");
+
+    private void structureOpen() {
+        Window stage = vbMenu.getScene().getWindow();
+        fileChooser.setTitle("Open File");
+        File file = fileChooser.showOpenDialog(stage);
+        String fileName = file.getAbsolutePath();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(fileName));
+            String sr;
+            while ((sr = br.readLine()) != null) {
+                structureInputArea.appendText(sr + "\r\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void inputFileOpen() {
+        Window stage = vbMenu.getScene().getWindow();
+        fileChooser.setTitle("Open File");
+        File file = fileChooser.showOpenDialog(stage);
+        inputTextArea.appendText(file.getAbsolutePath() + "\n");
+    }
+
+    private void saveFile(String str) {
+        Window stage = vbMenu.getScene().getWindow();
+        fileChooser.setTitle("Save File");
+        if (str.equals("Structure")) {
+            fileChooser.setInitialFileName("structure");
+        } else if (str.equals("Output")) {
+            fileChooser.setInitialFileName("Decoded_File");
+        }
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("text", "*.txt"));
+
+        try {
+            File file = fileChooser.showSaveDialog(stage);
+            fileChooser.setInitialDirectory(file.getParentFile()); // save chosen directory
+            StringBuilder sb = new StringBuilder();
+            sb.append(structureInputArea.getText());
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(sb.toString());
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     public void handleDragOver(DragEvent dragEvent) {
@@ -70,12 +122,6 @@ public class Controller implements Initializable {
     public void handleDragDrop(DragEvent dragEvent) {
         File file = dragEvent.getDragboard().getFiles().get(0);
         files.add(file);
-//        FileHandler handler = new FileHandler();
-//        try {
-//            urlTextArea.appendText(handler.extractTextFromFile(file));
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
         inputTextArea.appendText(file.getAbsolutePath() + "\n");
     }
 
@@ -85,6 +131,22 @@ public class Controller implements Initializable {
         files = new ArrayList<>();
         addComboBox.setItems(optt);
         varComboBox.setItems(varOption);
+
+        Scanner s = null;
+        try {
+            s = new Scanner(new File("C:\\Users\\b___b\\Desktop\\ANTMAN-Binary\\abc\\antman_binary\\src\\org\\antman\\binaryconverter\\application\\gui\\files\\recentFile.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        ArrayList<String> list = new ArrayList<String>();
+        while (s.hasNext()) {
+            list.add(s.next());
+        }
+        s.close();
+
+        for (String str : list) {
+            openRecentMenu.getItems().addAll(new MenuItem(str));
+        }
 
         addComboBox.setOnAction(action -> {
             String str = addComboBox.getSelectionModel().getSelectedItem();
@@ -177,21 +239,7 @@ public class Controller implements Initializable {
 
 
     public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
-        Window stage = vbMenu.getScene().getWindow();
-        fileChooser.setTitle("Save File");
-        fileChooser.setInitialFileName("structure");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("text", "*.txt"));
-        try {
-            File file = fileChooser.showSaveDialog(stage);
-            fileChooser.setInitialDirectory(file.getParentFile()); // save chosen directory
-            StringBuilder sb = new StringBuilder();
-            sb.append(structureInputArea.getText());
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(sb.toString());
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        saveFile("Structure");
     }
 
     @FXML
@@ -216,22 +264,107 @@ public class Controller implements Initializable {
         }
     }
 
+    public void inputFileOpenMenu(ActionEvent actionEvent) {
+        inputFileOpen();
+    }
+
     public void menuOpenStructure(ActionEvent actionEvent) {
-//        Window stage = vbMenu.getScene().getWindow();
-        Window stage = vbMenu.getScene().getWindow();
-        fileChooser.setTitle("Save File");
-        fileChooser.setInitialFileName("structure");
-        File file = fileChooser.showOpenDialog(stage);
-        String fileName = file.getAbsolutePath();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
-            String sr;
-            while ((sr = br.readLine()) != null) {
-                structureInputArea.appendText(sr + "\r\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        String structureFile = "Structure";
+        structureOpen();
+    }
+
+
+
+
+    /*
+    -------------------------------------------------------------------------------------------------
+            Enable Editing for Structure and Input File
+    -------------------------------------------------------------------------------------------------
+     */
+
+    public void editableCheck(ActionEvent actionEvent) {
+        if (editableCheckBox.isSelected()) {
+            inputTextArea.setEditable(true);
+            structureInputArea.setEditable(true);
+        } else {
+            inputTextArea.setEditable(false);
+            structureInputArea.setEditable(false);
         }
+    }
+
+    /*
+    -------------------------------------------------------------------------------------------------
+            Clear Structure ,Input and Output text area
+    -------------------------------------------------------------------------------------------------
+     */
+    public void clearStructureButton(MouseEvent mouseEvent) {
+        structureInputArea.clear();
+    }
+
+    public void clearAllButton(MouseEvent mouseEvent) {
+        structureInputArea.clear();
+        inputTextArea.clear();
+        outputTextArea.clear();
+    }
+
+    public void clearOutputButton(MouseEvent mouseEvent) {
+        outputTextArea.clear();
+    }
+
+    public void clearInputButton(MouseEvent mouseEvent) {
+        inputTextArea.clear();
+    }
+
+    /*
+    -----------------------------------------------------------------------
+                             Verify Button
+    ----------------------------------------------------------------------
+     */
+    public void verifyButtonClicked(MouseEvent mouseEvent) {
+
+        Decoder decoder = new Decoder();
+        List<String> structureList = Arrays.asList(structureInputArea.getText().split("\n"));
+        boolean success = false;
+        try {
+            BinaryStructure structure = BinaryStructure.getInstance(structureList);
+            success = true;
+        } catch (InvalidBinaryStructureException e) {
+            Alert.display(e.getMessage());
+            verifyButton.setText("Verify");
+        }
+        if (success) {
+            verifyButton.setText("Verified");
+            success = false;
+        }
+    }
+
+    @FXML
+    public Menu openRecentMenu;
+
+    public void openRecentMenuOnAction(ActionEvent actionEvent) throws IOException {
+
+//        FileWriter fileWriter = null;
+//        try {
+//            fileWriter = new FileWriter(recentFile,true);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        BufferedWriter writer = new BufferedWriter(fileWriter);
+//
+//        String message = "New Content in the file";
+//        try {
+//            writer.append("  ");
+//            writer.append(message);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }finally {
+//            writer.close();
+//        }
+    }
+
+    public void importButtonClicked(MouseEvent mouseEvent) {
+        inputFileOpen();
     }
 
     public void convertButtonOnMouseClicked(MouseEvent mouseEvent) {
@@ -255,57 +388,35 @@ public class Controller implements Initializable {
                         e.printStackTrace();
                     } catch (InvalidBinaryStructureException e) {
                         //todo show error dialog
+                        Alert.display(e.getMessage());
                         System.out.println(e.getMessage());
                     }
                 }).start();
             }
-            latch.await(2*files.size(), TimeUnit.SECONDS);
-            for(int i = 0; i < files.size(); i++ ) {
+            latch.await(2 * files.size(), TimeUnit.SECONDS);
+            for (int i = 0; i < files.size(); i++) {
                 outputTextArea.appendText("===============Decoded file - " + files.get(i).toString() + "===============\n");
                 outputTextArea.appendText(results.get(i) + "\n\n");
             }
-        }  catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    /*
-    -------------------------------------------------------------------------------------------------
-            Enable Editing for Structure and Input File
-    -------------------------------------------------------------------------------------------------
-     */
-
-    public void editableCheck(ActionEvent actionEvent) {
-        if (editableCheckBox.isSelected()) {
-            inputTextArea.setEditable(true);
-            structureInputArea.setEditable(true);
-        } else {
-            inputTextArea.setEditable(false);
-            structureInputArea.setEditable(false);
-        }
+    public void exportButtonClicked(MouseEvent mouseEvent) {
+        saveFile("Output");
     }
+
 
     /*
-    -------------------------------------------------------------------------------------------------
-            Clear Structure ,Input and Output text area
-    -------------------------------------------------------------------------------------------------
+    --------------------------------------------------
+                    Menu recent
+    -------------------------------------------------
      */
-    public void clearStuctureButton(MouseEvent mouseEvent) {
-        structureInputArea.clear();
-    }
+//
 
-    public void clearAllButton(MouseEvent mouseEvent) {
-        structureInputArea.clear();
-        inputTextArea.clear();
-        outputTextArea.clear();
-    }
 
-    public void clearOutputButton(MouseEvent mouseEvent) {
-        outputTextArea.clear();
-    }
-
-    public void clearInputButton(MouseEvent mouseEvent) {
-        inputTextArea.clear();
-    }
 }
+
+
 
