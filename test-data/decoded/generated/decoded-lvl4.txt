@@ -1,0 +1,1 @@
+10 0 a a a  1 b b b  2 c c c  3 d d d  4 e e e  5 f f f  6 g g g  7 h h h  8 i i i  9 j j j  6.6 7.7
