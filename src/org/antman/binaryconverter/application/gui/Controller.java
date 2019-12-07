@@ -3,6 +3,7 @@ package org.antman.binaryconverter.application.gui;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -15,7 +16,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.antman.binaryconverter.application.converter.Decoder;
 import org.antman.binaryconverter.application.converter.structure.BinaryStructure;
+import org.antman.binaryconverter.application.converter.structure.Element;
 import org.antman.binaryconverter.application.converter.structure.InvalidBinaryStructureException;
+import org.antman.binaryconverter.application.converter.structure.LoopElement;
 import org.antman.binaryconverter.application.util.FileHandler;
 
 import java.io.*;
@@ -25,8 +28,10 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Controller implements Initializable {
+    private static final int NUMBER_OF_RECENT_FILES = 20;
     @FXML
     public TextArea inputTextArea;
     @FXML
@@ -63,8 +68,10 @@ public class Controller implements Initializable {
 
     //------------------------------------------------
     // Recent file creator
-    //--------------------------
-    File recentFile = new File("C:\\Users\\b___b\\Desktop\\ANTMAN-Binary\\abc\\antman_binary\\src\\org\\antman\\binaryconverter\\application\\gui\\files\\recentFile.txt");
+    //-----------------------------------------------
+
+    File recentFiles = new File("cfg\\recent-files.txt");
+    File recentStructureFiles = new File("cfg\\recent-structure.txt");
 
     private void structureOpen() {
         Window stage = vbMenu.getScene().getWindow();
@@ -86,14 +93,14 @@ public class Controller implements Initializable {
         Window stage = vbMenu.getScene().getWindow();
         fileChooser.setTitle("Open File");
         File file = fileChooser.showOpenDialog(stage);
-        inputTextArea.appendText(file.getAbsolutePath() + "\n");
+        importFile(file);
     }
 
     private void saveFile(String str) {
         Window stage = vbMenu.getScene().getWindow();
         fileChooser.setTitle("Save File");
         if (str.equals("Structure")) {
-            fileChooser.setInitialFileName("structure");
+            fileChooser.setInitialFileName("Structure");
         } else if (str.equals("Output")) {
             fileChooser.setInitialFileName("Decoded_File");
         }
@@ -103,7 +110,11 @@ public class Controller implements Initializable {
             File file = fileChooser.showSaveDialog(stage);
             fileChooser.setInitialDirectory(file.getParentFile()); // save chosen directory
             StringBuilder sb = new StringBuilder();
-            sb.append(structureInputArea.getText());
+            if (str.equals("Structure")) {
+                sb.append(structureInputArea.getText());
+            } else if (str.equals("Output")) {
+                sb.append(outputTextArea.getText());
+            }
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(sb.toString());
             fileWriter.close();
@@ -112,7 +123,6 @@ public class Controller implements Initializable {
         }
     }
 
-    @FXML
     public void handleDragOver(DragEvent dragEvent) {
         if (dragEvent.getDragboard().hasFiles()) {
             dragEvent.acceptTransferModes(TransferMode.ANY);
@@ -120,33 +130,24 @@ public class Controller implements Initializable {
     }
 
     public void handleDragDrop(DragEvent dragEvent) {
-        File file = dragEvent.getDragboard().getFiles().get(0);
-        files.add(file);
-        inputTextArea.appendText(file.getAbsolutePath() + "\n");
+        inputTextArea.appendText(dragEvent.getDragboard().getFiles().stream().map(File::getAbsolutePath).collect(Collectors.joining("\n")) + "\n");
+        files.addAll(dragEvent.getDragboard().getFiles());
+        //updateRecentFiles();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+//        MenuItem item = new MenuItem("No recent files");
+//        item.setDisable(true);
+//        item.setVisible(false);
+//        openRecentMenu.getItems().add(item);
+
         handler = new FileHandler();
-        files = new ArrayList<>();
         addComboBox.setItems(optt);
         varComboBox.setItems(varOption);
-
-        Scanner s = null;
-        try {
-            s = new Scanner(new File("C:\\Users\\b___b\\Desktop\\ANTMAN-Binary\\abc\\antman_binary\\src\\org\\antman\\binaryconverter\\application\\gui\\files\\recentFile.txt"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        ArrayList<String> list = new ArrayList<String>();
-        while (s.hasNext()) {
-            list.add(s.next());
-        }
-        s.close();
-
-        for (String str : list) {
-            openRecentMenu.getItems().addAll(new MenuItem(str));
-        }
+        files = new ArrayList<>();
+        // updateRecentFiles();
 
         addComboBox.setOnAction(action -> {
             String str = addComboBox.getSelectionModel().getSelectedItem();
@@ -228,7 +229,6 @@ public class Controller implements Initializable {
 
     }
 
-
     private void addPrimitive(String selectedItem) {
         if (counter == 0) {
             structureInputArea.appendText(selectedItem + "\n");
@@ -237,12 +237,6 @@ public class Controller implements Initializable {
         }
     }
 
-
-    public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
-        saveFile("Structure");
-    }
-
-    @FXML
     public void onDragDroppedStructure(DragEvent dragEvent) {
         File file = dragEvent.getDragboard().getFiles().get(0);
         String fileName = file.getAbsolutePath();
@@ -264,6 +258,11 @@ public class Controller implements Initializable {
         }
     }
 
+    /*
+    -------------------------------------------------------------------
+                    Menu Bar
+    -------------------------------------------------------------------
+     */
     public void inputFileOpenMenu(ActionEvent actionEvent) {
         inputFileOpen();
     }
@@ -273,8 +272,32 @@ public class Controller implements Initializable {
         structureOpen();
     }
 
+    public void saveStructureMenu(ActionEvent actionEvent) {
+        saveFile("Structure");
+    }
 
+    public void saveOutputMenu(ActionEvent actionEvent) {
+        saveFile("Output");
+    }
 
+    public void clearAllMenu(ActionEvent actionEvent) {
+
+        structureInputArea.clear();
+        inputTextArea.clear();
+        outputTextArea.clear();
+        files.clear();
+    }
+
+    public void helpMenuAction(ActionEvent actionEvent) {
+                Runtime runtime = Runtime.getRuntime();
+        try {
+            runtime.exec("cmd /c test-data\\file.pdf");
+            Process pwd = runtime.exec("pwd");
+            System.out.println(new Scanner(pwd.getInputStream()).nextLine());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /*
     -------------------------------------------------------------------------------------------------
@@ -305,6 +328,7 @@ public class Controller implements Initializable {
         structureInputArea.clear();
         inputTextArea.clear();
         outputTextArea.clear();
+        files.clear();
     }
 
     public void clearOutputButton(MouseEvent mouseEvent) {
@@ -313,11 +337,12 @@ public class Controller implements Initializable {
 
     public void clearInputButton(MouseEvent mouseEvent) {
         inputTextArea.clear();
+        files.clear();
     }
 
     /*
     -----------------------------------------------------------------------
-                             Verify Button
+                             Verify Button and Save structure button
     ----------------------------------------------------------------------
      */
     public void verifyButtonClicked(MouseEvent mouseEvent) {
@@ -338,33 +363,20 @@ public class Controller implements Initializable {
         }
     }
 
-    @FXML
-    public Menu openRecentMenu;
-
-    public void openRecentMenuOnAction(ActionEvent actionEvent) throws IOException {
-
-//        FileWriter fileWriter = null;
-//        try {
-//            fileWriter = new FileWriter(recentFile,true);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        BufferedWriter writer = new BufferedWriter(fileWriter);
-//
-//        String message = "New Content in the file";
-//        try {
-//            writer.append("  ");
-//            writer.append(message);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }finally {
-//            writer.close();
-//        }
+    public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
+        saveFile("Structure");
     }
+
+
+    /*
+    ------------------------------------------------------------------------
+                Import , Export and Convert Button
+    -------------------------------------------------------------------------
+     */
 
     public void importButtonClicked(MouseEvent mouseEvent) {
         inputFileOpen();
+
     }
 
     public void convertButtonOnMouseClicked(MouseEvent mouseEvent) {
@@ -407,16 +419,90 @@ public class Controller implements Initializable {
         saveFile("Output");
     }
 
-
     /*
     --------------------------------------------------
                     Menu recent
     -------------------------------------------------
      */
-//
+    @FXML
+    public Menu openRecentMenu;
+
+    public void openRecentMenuOnAction(ActionEvent actionEvent) throws IOException {
+
+    }
+
+    /**
+     * every time we add a file call this method
+     * save all files from files list
+     * Create List<Files> recentFiles
+     * if files.size() < 20, append
+     * if >= 20 delete last, append
+     * recentFiles
+     * save
+     */
+    private void updateRecentFiles() {
+
+        List<String> recentFilesList = null;
+        //load recent files
+        try {
+            recentFilesList = handler.readLines(recentFiles);
+        } catch (FileNotFoundException e) {
+            try {
+                new File("cfg").mkdir();
+                handler.createFile(recentFiles);
+            } catch (IOException ex) {
+                System.out.println("file not created");
+                ex.printStackTrace();
+            }
+        }
+        for (File file : files) {
+            if (recentFilesList.contains(file.getAbsolutePath())) {
+                recentFilesList.remove(file.getAbsolutePath());
+                recentFilesList.add(file.getAbsolutePath());
+            }
+            if (recentFilesList.size() >= NUMBER_OF_RECENT_FILES) {
+                recentFilesList.remove(0);
+                recentFilesList.add(file.getAbsolutePath());
+            }
+        }
+        // no recent file
+        boolean visible = false;
+        if (recentFilesList == null || recentFilesList.isEmpty()) visible = true;
+        else {
+            openRecentMenu.getItems().clear();
+            for (int i = 0; i < recentFilesList.size(); i++) {
+                String str = recentFilesList.get(i);
+                MenuItem mi = new MenuItem(str);
+                mi.setOnAction(event -> {
+                    File file = new File(str);
+                    files.add(file);
+                    inputTextArea.appendText(file.getAbsolutePath() + "\n");
+                });
+
+                openRecentMenu.getItems().add(mi);
+            }
+        }
+        openRecentMenu.getItems().get(0).setVisible(visible);
+        //save recentfileslist
+
+        try {
+            handler.write(recentFilesList, recentFiles);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(recentFilesList.size() + " 1");
+        System.out.println(files.size() + " 2");
+    }
+
+    private void importFile(File file) {
+        files.add(file);
+        inputTextArea.appendText(file.getAbsolutePath() + "\n");
+//        updateRecentFiles();
+    }
 
 
 }
+
 
 
 
