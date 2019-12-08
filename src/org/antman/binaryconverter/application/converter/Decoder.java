@@ -40,8 +40,8 @@ public class Decoder {
                     }
                     result.append(loop(le, structure, buffer, 0));
                     pos += le.getNumberOfElements();
-                    for (int i = 0; i < le.getNumberOfElements(); i++) {
-                        structure.remove(0);
+                    if (le.getNumberOfElements() > 0) {
+                        structure.subList(0, le.getNumberOfElements()).clear();
                     }
                 }
                 pos++;

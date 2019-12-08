@@ -5,7 +5,8 @@ import org.antman.binaryconverter.application.util.FileHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -16,7 +17,7 @@ import java.util.*;
  * @version 3.0
  * @see Element
  */
-public class BinaryStructure extends ArrayList<Element> implements List<Element>{
+public class BinaryStructure extends ArrayList<Element> implements List<Element> {
 
     ArrayList<VariableElement> declaredVariables;
 
@@ -28,18 +29,18 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
         List<String> lines = listOfElements;
 
         BinaryStructure binaryStructure = new BinaryStructure();
-        String regex = "\\(|\\)";
+        String regex = "[()]";
         int line = 1;
         ArrayList<LoopElement> loops = new ArrayList<>();
         int pos = -1;
         try {
             for (String el : lines) {
-                if(el.equals("")) {
+                if (el.equals("")) {
                     pos++;
                     line++;
                     continue;
                 }
-                el = el.replaceAll("  *|\t","");
+                el = el.replaceAll("  *|\t", "");
                 pos++;
                 String[] element = el.split(regex);
                 //store the type
@@ -52,7 +53,7 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
                     }
                     //if endloop, check if there is a matching loop
                     else if (type == Element.Type.ENDLOOP && !loops.isEmpty()) {
-                        LoopElement loopElement = loops.remove(loops.size()-1);//(LoopElement) binaryStructure.get(binaryStructure.size() - 1 - loopCounter);
+                        LoopElement loopElement = loops.remove(loops.size() - 1);//(LoopElement) binaryStructure.get(binaryStructure.size() - 1 - loopCounter);
                         binaryStructure.set(loopElement.getPosition(), loopElement);
                         pos--;
                     } else
@@ -62,14 +63,14 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
                     if (type == Element.Type.LOOP) {
                         incrementLoops(loops);
                         //todo
-                        int varIndex = binaryStructure.declaredVariables.indexOf(new VariableElement(element[1],-1));
-                        if (varIndex>=0) {     //loop with var
-                            LoopElement le = new LoopElement(binaryStructure.declaredVariables.get(varIndex),0,pos);
+                        int varIndex = binaryStructure.declaredVariables.indexOf(new VariableElement(element[1], -1));
+                        if (varIndex >= 0) {     //loop with var
+                            LoopElement le = new LoopElement(binaryStructure.declaredVariables.get(varIndex), 0, pos);
                             loops.add(le);
                             binaryStructure.add(le);
                         } else {                                                             //loop with number
                             try {
-                                LoopElement le = new LoopElement(Integer.parseInt(element[1]),0,pos);
+                                LoopElement le = new LoopElement(Integer.parseInt(element[1]), 0, pos);
                                 loops.add(le);
                                 binaryStructure.add(le);
                             } catch (IllegalArgumentException e) {
@@ -78,8 +79,8 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
                         }
                     } else if (type == Element.Type.VAR) {
                         String varName = element[1];
-                        binaryStructure.declaredVariables.add(new VariableElement(varName,pos));
-                        binaryStructure.add(new VariableElement(varName,pos));
+                        binaryStructure.declaredVariables.add(new VariableElement(varName, pos));
+                        binaryStructure.add(new VariableElement(varName, pos));
                         incrementLoops(loops);
                     } else
                         throw new InvalidBinaryStructureException("Structure syntax error! Invalid element on line " + line);
@@ -94,8 +95,8 @@ public class BinaryStructure extends ArrayList<Element> implements List<Element>
     }
 
     private static void incrementLoops(ArrayList<LoopElement> loops) {
-        if(loops.isEmpty()) return;
-        for(LoopElement e : loops){
+        if (loops.isEmpty()) return;
+        for (LoopElement e : loops) {
             e.setNumberOfElements(e.getNumberOfElements() + 1);
         }
     }

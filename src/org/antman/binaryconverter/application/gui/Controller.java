@@ -20,7 +20,6 @@ import org.antman.binaryconverter.application.util.FileHandler;
 
 import java.io.*;
 import java.net.URL;
-
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -70,12 +69,6 @@ public class Controller implements Initializable {
     public void handleDragDrop(DragEvent dragEvent) {
         File file = dragEvent.getDragboard().getFiles().get(0);
         files.add(file);
-//        FileHandler handler = new FileHandler();
-//        try {
-//            urlTextArea.appendText(handler.extractTextFromFile(file));
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
         inputTextArea.appendText(file.getAbsolutePath() + "\n");
     }
 
@@ -108,16 +101,14 @@ public class Controller implements Initializable {
     }
 
     public void buttonAddMouseClicked() {
-        //  textAreaOption.setText(comboBox.getSelectionModel().getSelectedItem());
         String str = addComboBox.getSelectionModel().getSelectedItem();
-
-        if (str != "Loop" && str != "Var" && str != "EndLoop" && str != null) {
+        if (!str.equals("Loop") && !str.equals("Var") && !str.equals("EndLoop") && str != null) {
             addPrimitive(addComboBox.getSelectionModel().getSelectedItem());
-        } else if (str == "Loop") {
+        } else if (str.equals("Loop")) {
             addLoop(str);
-        } else if (str == "Var") {
+        } else if (str.equals("Var")) {
             addVar(str);
-        } else if (str == "EndLoop") {
+        } else if (str.equals("EndLoop")) {
             addEndLoop(str);
         }
     }
@@ -217,7 +208,6 @@ public class Controller implements Initializable {
     }
 
     public void menuOpenStructure(ActionEvent actionEvent) {
-//        Window stage = vbMenu.getScene().getWindow();
         Window stage = vbMenu.getScene().getWindow();
         fileChooser.setTitle("Save File");
         fileChooser.setInitialFileName("structure");
@@ -259,12 +249,12 @@ public class Controller implements Initializable {
                     }
                 }).start();
             }
-            latch.await(2*files.size(), TimeUnit.SECONDS);
-            for(int i = 0; i < files.size(); i++ ) {
+            latch.await(2 * files.size(), TimeUnit.SECONDS);
+            for (int i = 0; i < files.size(); i++) {
                 outputTextArea.appendText("===============Decoded file - " + files.get(i).toString() + "===============\n");
                 outputTextArea.appendText(results.get(i) + "\n\n");
             }
-        }  catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
