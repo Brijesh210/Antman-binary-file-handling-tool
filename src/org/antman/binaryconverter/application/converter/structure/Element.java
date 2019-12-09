@@ -1,33 +1,38 @@
 package org.antman.binaryconverter.application.converter.structure;
 
 
-
-public abstract  class Element{
+/**
+ * Base class representing elements of the binary file
+ * Integer, Float, Character, Loop, Variable
+ *
+ * @author Ismoil Atajanov
+ * @version 3.0
+ * @see LoopElement
+ * @see PrimitiveElement
+ * @see VariableElement
+ * @see Element.Type
+ */
+public abstract class Element {
 
     Type type;
-    public Type getType(){
+
+    public Type getType() {
         return type;
     }
 
+    public static PrimitiveElement getIntElement() {
+        return new PrimitiveElement(Type.INT, 32);
+    }
+
+    public static PrimitiveElement getCharElement() {
+        return new PrimitiveElement(Type.CHAR, 32);
+    }
+
+    public static PrimitiveElement getFloatElement() {
+        return new PrimitiveElement(Type.FLOAT, 32);
+    }
+
     public abstract int getPosition();
-    public abstract int getSize();
-    public int getSize(BinaryStructure structure){return 0;}
-    public static PrimitiveElement getIntElement(){
-        PrimitiveElement element = new PrimitiveElement(Type.INT,32);
-        return element;
-    }
-
-    public static PrimitiveElement getCharElement(){
-        PrimitiveElement element = new PrimitiveElement(Type.CHAR,32);
-        return element;
-    }
-
-    public static PrimitiveElement getFloatElement(){
-        PrimitiveElement element = new PrimitiveElement(Type.FLOAT,32);
-        return element;
-    }
-
-
 
     @Override
     public String toString() {
@@ -55,7 +60,7 @@ public abstract  class Element{
             return name;
         }
 
-        public boolean isPrimitive(){
+        public boolean isPrimitive() {
             return this == Type.INT || this == Type.CHAR || this == Type.FLOAT;
         }
     }

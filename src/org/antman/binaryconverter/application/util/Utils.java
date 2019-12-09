@@ -1,5 +1,8 @@
 package org.antman.binaryconverter.application.util;
 
+/**
+ * Class providing utility methods
+ */
 public class Utils {
     public static byte[] toPrimitive(Byte[] array) {
         if (array == null) {

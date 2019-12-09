@@ -17,8 +17,8 @@
                             <items>
                                 <MenuItem fx:id="menuOpenStructureFile" mnemonicParsing="false" onAction="#menuOpenStructure" text="Open Stucture File" />
                                 <MenuItem fx:id="menuOpenInputFile" mnemonicParsing="false" onAction="#inputFileOpenMenu" text="Open Input File" />
-                                <MenuItem fx:id="menuSaveStructure" mnemonicParsing="false" onAction="#saveStructureMenu" text="Save Stucture" />
-                                <MenuItem fx:id="menuSaveOutput" mnemonicParsing="false" onAction="#saveOutputMenu" text="Save Output" />
+                                <MenuItem fx:id="menuSaveStructure" mnemonicParsing="false" text="Save Stucture" />
+                                <MenuItem fx:id="menuSaveOutput" mnemonicParsing="false" text="Save Output" />
                                 <Menu fx:id="openRecentMenu" mnemonicParsing="false" onAction="#openRecentMenuOnAction" text="Recent Structure File">
 
                                 </Menu>
@@ -31,12 +31,12 @@
                         </Menu>
                         <Menu mnemonicParsing="false" text="Edit">
                             <items>
-                                <MenuItem fx:id="clearEditMenu" mnemonicParsing="false" onAction="#clearAllMenu" text="Clear All" />
+                                <MenuItem mnemonicParsing="false" text="Delete" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Help">
                             <items>
-                                <MenuItem fx:id="helpMenu" mnemonicParsing="false" onAction="#helpMenuAction" text="About" />
+                                <MenuItem mnemonicParsing="false" text="About" />
                             </items>
                         </Menu>
                     </menus>

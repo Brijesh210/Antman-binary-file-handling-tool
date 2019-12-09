@@ -23,7 +23,6 @@ import org.antman.binaryconverter.application.util.FileHandler;
 
 import java.io.*;
 import java.net.URL;
-
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -68,10 +67,15 @@ public class Controller implements Initializable {
 
     //------------------------------------------------
     // Recent file creator
+<<<<<<< Updated upstream
     //-----------------------------------------------
 
     File recentFiles = new File("cfg\\recent-files.txt");
     File recentStructureFiles = new File("cfg\\recent-structure.txt");
+=======
+    //--------------------------
+    File recentFile = new File("C:\\Users\\b___b\\Desktop\\ANTMAN-Binary\\abc\\antman_binary\\src\\org\\antman\\binaryconverter\\application\\gui\\files\\recentFile.txt");
+>>>>>>> Stashed changes
 
     private void structureOpen() {
         Window stage = vbMenu.getScene().getWindow();
@@ -93,14 +97,22 @@ public class Controller implements Initializable {
         Window stage = vbMenu.getScene().getWindow();
         fileChooser.setTitle("Open File");
         File file = fileChooser.showOpenDialog(stage);
+<<<<<<< Updated upstream
         importFile(file);
+=======
+        inputTextArea.appendText(file.getAbsolutePath() + "\n");
+>>>>>>> Stashed changes
     }
 
     private void saveFile(String str) {
         Window stage = vbMenu.getScene().getWindow();
         fileChooser.setTitle("Save File");
         if (str.equals("Structure")) {
+<<<<<<< Updated upstream
             fileChooser.setInitialFileName("Structure");
+=======
+            fileChooser.setInitialFileName("structure");
+>>>>>>> Stashed changes
         } else if (str.equals("Output")) {
             fileChooser.setInitialFileName("Decoded_File");
         }
@@ -110,11 +122,15 @@ public class Controller implements Initializable {
             File file = fileChooser.showSaveDialog(stage);
             fileChooser.setInitialDirectory(file.getParentFile()); // save chosen directory
             StringBuilder sb = new StringBuilder();
+<<<<<<< Updated upstream
             if (str.equals("Structure")) {
                 sb.append(structureInputArea.getText());
             } else if (str.equals("Output")) {
                 sb.append(outputTextArea.getText());
             }
+=======
+            sb.append(structureInputArea.getText());
+>>>>>>> Stashed changes
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(sb.toString());
             fileWriter.close();
@@ -123,6 +139,10 @@ public class Controller implements Initializable {
         }
     }
 
+<<<<<<< Updated upstream
+=======
+    @FXML
+>>>>>>> Stashed changes
     public void handleDragOver(DragEvent dragEvent) {
         if (dragEvent.getDragboard().hasFiles()) {
             dragEvent.acceptTransferModes(TransferMode.ANY);
@@ -130,9 +150,15 @@ public class Controller implements Initializable {
     }
 
     public void handleDragDrop(DragEvent dragEvent) {
+<<<<<<< HEAD
         inputTextArea.appendText(dragEvent.getDragboard().getFiles().stream().map(File::getAbsolutePath).collect(Collectors.joining("\n")) + "\n");
         files.addAll(dragEvent.getDragboard().getFiles());
         //updateRecentFiles();
+=======
+        File file = dragEvent.getDragboard().getFiles().get(0);
+        files.add(file);
+        inputTextArea.appendText(file.getAbsolutePath() + "\n");
+>>>>>>> 1f83efc61beef70159ecddfa4adaf0e402e0958c
     }
 
     @Override
@@ -148,6 +174,22 @@ public class Controller implements Initializable {
         varComboBox.setItems(varOption);
         files = new ArrayList<>();
         // updateRecentFiles();
+
+        Scanner s = null;
+        try {
+            s = new Scanner(new File("C:\\Users\\b___b\\Desktop\\ANTMAN-Binary\\abc\\antman_binary\\src\\org\\antman\\binaryconverter\\application\\gui\\files\\recentFile.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        ArrayList<String> list = new ArrayList<String>();
+        while (s.hasNext()) {
+            list.add(s.next());
+        }
+        s.close();
+
+        for (String str : list) {
+            openRecentMenu.getItems().addAll(new MenuItem(str));
+        }
 
         addComboBox.setOnAction(action -> {
             String str = addComboBox.getSelectionModel().getSelectedItem();
@@ -171,16 +213,14 @@ public class Controller implements Initializable {
     }
 
     public void buttonAddMouseClicked() {
-        //  textAreaOption.setText(comboBox.getSelectionModel().getSelectedItem());
         String str = addComboBox.getSelectionModel().getSelectedItem();
-
-        if (str != "Loop" && str != "Var" && str != "EndLoop" && str != null) {
+        if (!str.equals("Loop") && !str.equals("Var") && !str.equals("EndLoop") && str != null) {
             addPrimitive(addComboBox.getSelectionModel().getSelectedItem());
-        } else if (str == "Loop") {
+        } else if (str.equals("Loop")) {
             addLoop(str);
-        } else if (str == "Var") {
+        } else if (str.equals("Var")) {
             addVar(str);
-        } else if (str == "EndLoop") {
+        } else if (str.equals("EndLoop")) {
             addEndLoop(str);
         }
     }
@@ -237,6 +277,15 @@ public class Controller implements Initializable {
         }
     }
 
+<<<<<<< Updated upstream
+=======
+
+    public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
+        saveFile("Structure");
+    }
+
+    @FXML
+>>>>>>> Stashed changes
     public void onDragDroppedStructure(DragEvent dragEvent) {
         File file = dragEvent.getDragboard().getFiles().get(0);
         String fileName = file.getAbsolutePath();
@@ -258,20 +307,28 @@ public class Controller implements Initializable {
         }
     }
 
+<<<<<<< Updated upstream
     /*
     -------------------------------------------------------------------
                     Menu Bar
     -------------------------------------------------------------------
      */
+=======
+>>>>>>> Stashed changes
     public void inputFileOpenMenu(ActionEvent actionEvent) {
         inputFileOpen();
     }
 
     public void menuOpenStructure(ActionEvent actionEvent) {
+<<<<<<< Updated upstream
+<<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
         String structureFile = "Structure";
         structureOpen();
     }
 
+<<<<<<< Updated upstream
     public void saveStructureMenu(ActionEvent actionEvent) {
         saveFile("Structure");
     }
@@ -290,13 +347,113 @@ public class Controller implements Initializable {
 
     public void helpMenuAction(ActionEvent actionEvent) {
                 Runtime runtime = Runtime.getRuntime();
+=======
+        Window stage = vbMenu.getScene().getWindow();
+        fileChooser.setTitle("Save File");
+        fileChooser.setInitialFileName("structure");
+        File file = fileChooser.showOpenDialog(stage);
+        String fileName = file.getAbsolutePath();
+>>>>>>> 1f83efc61beef70159ecddfa4adaf0e402e0958c
         try {
             runtime.exec("cmd /c test-data\\file.pdf");
             Process pwd = runtime.exec("pwd");
             System.out.println(new Scanner(pwd.getInputStream()).nextLine());
         } catch (IOException e) {
             e.printStackTrace();
+=======
+
+
+
+    /*
+    -------------------------------------------------------------------------------------------------
+            Enable Editing for Structure and Input File
+    -------------------------------------------------------------------------------------------------
+     */
+
+    public void editableCheck(ActionEvent actionEvent) {
+        if (editableCheckBox.isSelected()) {
+            inputTextArea.setEditable(true);
+            structureInputArea.setEditable(true);
+        } else {
+            inputTextArea.setEditable(false);
+            structureInputArea.setEditable(false);
         }
+    }
+
+    /*
+    -------------------------------------------------------------------------------------------------
+            Clear Structure ,Input and Output text area
+    -------------------------------------------------------------------------------------------------
+     */
+    public void clearStructureButton(MouseEvent mouseEvent) {
+        structureInputArea.clear();
+    }
+
+    public void clearAllButton(MouseEvent mouseEvent) {
+        structureInputArea.clear();
+        inputTextArea.clear();
+        outputTextArea.clear();
+    }
+
+    public void clearOutputButton(MouseEvent mouseEvent) {
+        outputTextArea.clear();
+    }
+
+    public void clearInputButton(MouseEvent mouseEvent) {
+        inputTextArea.clear();
+    }
+
+    /*
+    -----------------------------------------------------------------------
+                             Verify Button
+    ----------------------------------------------------------------------
+     */
+    public void verifyButtonClicked(MouseEvent mouseEvent) {
+
+        Decoder decoder = new Decoder();
+        List<String> structureList = Arrays.asList(structureInputArea.getText().split("\n"));
+        boolean success = false;
+        try {
+            BinaryStructure structure = BinaryStructure.getInstance(structureList);
+            success = true;
+        } catch (InvalidBinaryStructureException e) {
+            Alert.display(e.getMessage());
+            verifyButton.setText("Verify");
+>>>>>>> Stashed changes
+        }
+        if (success) {
+            verifyButton.setText("Verified");
+            success = false;
+        }
+    }
+
+    @FXML
+    public Menu openRecentMenu;
+
+    public void openRecentMenuOnAction(ActionEvent actionEvent) throws IOException {
+
+//        FileWriter fileWriter = null;
+//        try {
+//            fileWriter = new FileWriter(recentFile,true);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        BufferedWriter writer = new BufferedWriter(fileWriter);
+//
+//        String message = "New Content in the file";
+//        try {
+//            writer.append("  ");
+//            writer.append(message);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }finally {
+//            writer.close();
+//        }
+    }
+
+    public void importButtonClicked(MouseEvent mouseEvent) {
+        inputFileOpen();
     }
 
     /*
@@ -417,6 +574,7 @@ public class Controller implements Initializable {
 
     public void exportButtonClicked(MouseEvent mouseEvent) {
         saveFile("Output");
+<<<<<<< Updated upstream
     }
 
     /*
@@ -502,6 +660,22 @@ public class Controller implements Initializable {
 
 
 }
+=======
+    }
+
+
+    /*
+    --------------------------------------------------
+                    Menu recent
+    -------------------------------------------------
+  //
+
+     */
+
+}
+
+
+>>>>>>> Stashed changes
 
 
 

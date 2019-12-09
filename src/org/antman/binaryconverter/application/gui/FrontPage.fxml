@@ -17,8 +17,13 @@
                             <items>
                                 <MenuItem fx:id="menuOpenStructureFile" mnemonicParsing="false" onAction="#menuOpenStructure" text="Open Stucture File" />
                                 <MenuItem fx:id="menuOpenInputFile" mnemonicParsing="false" onAction="#inputFileOpenMenu" text="Open Input File" />
+<<<<<<< Updated upstream
                                 <MenuItem fx:id="menuSaveStructure" mnemonicParsing="false" onAction="#saveStructureMenu" text="Save Stucture" />
                                 <MenuItem fx:id="menuSaveOutput" mnemonicParsing="false" onAction="#saveOutputMenu" text="Save Output" />
+=======
+                                <MenuItem fx:id="menuSaveStructure" mnemonicParsing="false" text="Save Stucture" />
+                                <MenuItem fx:id="menuSaveOutput" mnemonicParsing="false" text="Save Output" />
+>>>>>>> Stashed changes
                                 <Menu fx:id="openRecentMenu" mnemonicParsing="false" onAction="#openRecentMenuOnAction" text="Recent Structure File">
 
                                 </Menu>
@@ -31,12 +36,20 @@
                         </Menu>
                         <Menu mnemonicParsing="false" text="Edit">
                             <items>
+<<<<<<< Updated upstream
                                 <MenuItem fx:id="clearEditMenu" mnemonicParsing="false" onAction="#clearAllMenu" text="Clear All" />
+=======
+                                <MenuItem mnemonicParsing="false" text="Delete" />
+>>>>>>> Stashed changes
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Help">
                             <items>
+<<<<<<< Updated upstream
                                 <MenuItem fx:id="helpMenu" mnemonicParsing="false" onAction="#helpMenuAction" text="About" />
+=======
+                                <MenuItem mnemonicParsing="false" text="About" />
+>>>>>>> Stashed changes
                             </items>
                         </Menu>
                     </menus>
