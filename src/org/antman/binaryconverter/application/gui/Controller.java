@@ -138,11 +138,14 @@ public class Controller implements Initializable {
         fileChooser.setTitle("Save File");
         if (str.equals("Structure")) {
             fileChooser.setInitialFileName("Structure");
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Structure", "*.struc"));
+
 
         } else if (str.equals("Output")) {
             fileChooser.setInitialFileName("Decoded_File");
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("text", "*.txt"));
+
         }
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("text", "*.txt"));
 
         try {
             File file = fileChooser.showSaveDialog(stage);
@@ -188,6 +191,7 @@ public class Controller implements Initializable {
     }
 
     public void onDragDroppedStructure(DragEvent dragEvent) {
+        structureInputArea.clear();
         File file = dragEvent.getDragboard().getFiles().get(0);
         String fileName = file.getAbsolutePath();
         try {
@@ -200,6 +204,7 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
         System.out.println(file.getAbsolutePath());
+
     }
 
     public void onDragOverStructure(DragEvent dragEvent) {     // Drag Drop structure file
@@ -207,7 +212,6 @@ public class Controller implements Initializable {
             dragEvent.acceptTransferModes(TransferMode.ANY);
         }
     }
-
 
     /*
     ---------------------------------------------------
@@ -315,11 +319,11 @@ public class Controller implements Initializable {
 
     public void helpMenuAction(ActionEvent actionEvent) {
         Runtime runtime = Runtime.getRuntime();
-        Window stage = vbMenu.getScene().getWindow();
-        fileChooser.setTitle("Save File");
-        fileChooser.setInitialFileName("structure");
-        File file = fileChooser.showOpenDialog(stage);
-        String fileName = file.getAbsolutePath();
+//        Window stage = vbMenu.getScene().getWindow();
+//        fileChooser.setTitle("Save File");
+//        fileChooser.setInitialFileName("structure");
+//        File file = fileChooser.showOpenDialog(stage);
+//        String fileName = file.getAbsolutePath();
         try {
             runtime.exec("cmd /c test-data\\file.pdf");
             Process pwd = runtime.exec("pwd");
@@ -439,6 +443,8 @@ public class Controller implements Initializable {
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }finally {
+            outputTextArea.clear();
         }
     }
 
