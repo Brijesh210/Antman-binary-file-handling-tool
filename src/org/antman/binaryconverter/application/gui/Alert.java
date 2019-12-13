@@ -11,7 +11,7 @@ public class Alert {
 
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle("Aler message!!");
+        window.setTitle("Alert message!!");
         window.setMinWidth(250);
 
 

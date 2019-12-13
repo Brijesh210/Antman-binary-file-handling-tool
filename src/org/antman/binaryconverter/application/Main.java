@@ -14,6 +14,8 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("gui/FrontPage.fxml"));
         primaryStage.setTitle("Ant-Man");
         primaryStage.setScene(new Scene(root, 1200, 550));
+        primaryStage.setMinHeight(420);
+        primaryStage.setMinWidth(750);
         primaryStage.show();
     }
 

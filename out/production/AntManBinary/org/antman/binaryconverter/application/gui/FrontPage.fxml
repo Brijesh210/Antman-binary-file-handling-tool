@@ -16,23 +16,40 @@
                 <MenuBar layoutX="6.0" layoutY="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                          AnchorPane.topAnchor="0.0">
                     <menus>
-                        <Menu mnemonicParsing="false" text="File">
+                        <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
                             <items>
                                 <MenuItem fx:id="menuOpenStructureFile" mnemonicParsing="false"
                                           onAction="#menuOpenStructure" text="Open Stucture File"/>
-                                <MenuItem fx:id="menuOpenInputFile" mnemonicParsing="false" text="Open Input File"/>
-                                <MenuItem fx:id="menuSaveStructure" mnemonicParsing="false" text="Save As Stucture"/>
-                                <MenuItem fx:id="menuSaveOutput" mnemonicParsing="false" text="Save As Output"/>
+                                <MenuItem fx:id="menuOpenInputFile" mnemonicParsing="false"
+                                          onAction="#inputFileOpenMenu" text="Open Input File"/>
+                                <MenuItem fx:id="menuSaveStructure" mnemonicParsing="false"
+                                          onAction="#saveStructureMenu" text="Save Stucture"/>
+                                <MenuItem fx:id="menuSaveOutput" mnemonicParsing="false" onAction="#saveOutputMenu"
+                                          text="Save Output"/>
+
+                                <Menu fx:id="openRecentMenu" mnemonicParsing="false" onAction="#openRecentMenuOnAction"
+                                      text="Recent Structure File">
+
+                                </Menu>
+                                <Menu mnemonicParsing="false" text="Recent Input File">
+                                    <items>
+                                        <MenuItem mnemonicParsing="false" text="Action 1"/>
+                                    </items>
+                                </Menu>
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Edit">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="Delete"/>
+                                <MenuItem fx:id="clearEditMenu" mnemonicParsing="false" onAction="#clearAllMenu"
+                                          text="Clear All"/>
+
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Help">
                             <items>
-                                <MenuItem mnemonicParsing="false" text="About"/>
+                                <MenuItem fx:id="helpMenu" mnemonicParsing="false" onAction="#helpMenuAction"
+                                          text="About"/>
+
                             </items>
                         </Menu>
                     </menus>
@@ -126,9 +143,11 @@
                                                         </AnchorPane>
                                                         <HBox layoutX="-5.0" layoutY="-11.0" maxHeight="35.0">
                                                             <children>
-                                                                <Button maxWidth="1.7976931348623157E308"
-                                                                        mnemonicParsing="false" text="Verify"
-                                                                        HBox.hgrow="ALWAYS">
+                                                                <Button fx:id="verifyButton"
+                                                                        maxWidth="1.7976931348623157E308"
+                                                                        mnemonicParsing="false"
+                                                                        onMouseClicked="#verifyButtonClicked"
+                                                                        text="Verify" HBox.hgrow="ALWAYS">
                                                                     <effect>
                                                                         <DropShadow/>
                                                                     </effect>
@@ -179,7 +198,7 @@
                                                         <Button fx:id="clearStructure" layoutX="257.0" layoutY="258.0"
                                                                 maxWidth="1.7976931348623157E308"
                                                                 mnemonicParsing="false"
-                                                                onMouseClicked="#clearStuctureButton"
+                                                                onMouseClicked="#clearStructureButton"
                                                                 text="Clear Structure" GridPane.columnIndex="1"
                                                                 GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"/>
                                                         <Button fx:id="clearInput" layoutX="361.0" layoutY="196.0"
@@ -225,9 +244,9 @@
                                             <children>
                                                 <Button fx:id="importButton" alignment="CENTER"
                                                         maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                                                        text="Import" AnchorPane.bottomAnchor="0.0"
-                                                        AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0"
-                                                        HBox.hgrow="ALWAYS">
+                                                        onMouseClicked="#importButtonClicked" text="Import"
+                                                        AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                                        AnchorPane.topAnchor="0.0" HBox.hgrow="ALWAYS">
                                                     <effect>
                                                         <DropShadow/>
                                                     </effect>
@@ -242,7 +261,8 @@
                                                 </Button>
                                                 <Button fx:id="exportButton" layoutX="368.0" layoutY="5.0"
                                                         maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                                                        text="Export" HBox.hgrow="ALWAYS">
+                                                        onMouseClicked="#exportButtonClicked" text="Export"
+                                                        HBox.hgrow="ALWAYS">
                                                     <effect>
                                                         <DropShadow/>
                                                     </effect>
