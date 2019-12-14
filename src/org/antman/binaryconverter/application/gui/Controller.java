@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import org.antman.binaryconverter.application.converter.Decoder;
@@ -29,10 +30,8 @@ import java.util.stream.Collectors;
 /**
  * @author Brijesh varsani
  * @version 1.2
- *
  */
 public class Controller implements Initializable {
-    private static final int NUMBER_OF_RECENT_FILES = 20;
     @FXML
     public TextArea inputTextArea;
     @FXML
@@ -59,23 +58,22 @@ public class Controller implements Initializable {
     public VBox vbMenu;
 
     FileChooser fileChooser = new FileChooser();
-    FileChooser fileChooser2 = new FileChooser();
+    DirectoryChooser directoryChooser = new DirectoryChooser();
 
     ObservableList<String> optt = FXCollections.observableArrayList("Char", "Int", "Float", "Var", "Loop", "EndLoop");
     ObservableList<String> varOption = FXCollections.observableArrayList();
 
     FileHandler handler;
 
-    //private boolean flag = false;
     private int counter = 0;
     private ArrayList<File> files;
+    private ArrayList<String> outputStrings = new ArrayList<>();
 
     /*------------------------------------------------
      Recent file creator
     -------------------------------------------------
      */
 
-    File recentStructureFiles = new File("cfg\\recent-files.txt");
     File recentFiles = new File("cfg\\recent-structure.txt");
 
     @Override
@@ -111,15 +109,18 @@ public class Controller implements Initializable {
 
     private void structureOpen() {
 
-        getRecentPath("Stuct");
-
+        getRecentPath(0);
         Window stage = vbMenu.getScene().getWindow();
         fileChooser.setTitle("Open File");
 
         File file = fileChooser.showOpenDialog(stage);
         String fileName = file.getAbsolutePath();
         try {
-            handler.write(file.getParentFile().toString(), recentStructureFiles);
+            List<String> strings = handler.readLines(recentFiles);
+
+            strings.set(0, file.getParentFile().toString());
+            handler.write(strings, recentFiles);
+
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String sr;
             while ((sr = br.readLine()) != null) {
@@ -130,61 +131,66 @@ public class Controller implements Initializable {
         }
     }
 
-    private void getRecentPath(String str) {
-        List<String> listStr = null;
+    /**
+     * 0 - recent struct
+     * 1 - recent input
+     * 2 - recent output
+     */
+    private File getRecentPath(int which) {
+        File path = null;
         try {
-            if (str.equals("Stuct"))
-                listStr = handler.readLines(recentStructureFiles);
-            else if (str.equals("Input")) listStr = handler.readLines(recentFiles);
-
+            path = new File(handler.readLines(recentFiles).get(which));
+            if (path != null && path.isDirectory()) fileChooser.setInitialDirectory(path);
+            else fileChooser.setInitialDirectory(new File("c://"));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            fileChooser.setInitialDirectory(new File("c://"));
+        } catch (Exception e) {
+            fileChooser.setInitialDirectory(new File("c://"));
+        } finally {
+            return path;
         }
-        if (!listStr.isEmpty() && listStr != null && new File(listStr.get(0)).isDirectory()) {
-            fileChooser.setInitialDirectory(new File(listStr.get(0)));
-        } else {
-            fileChooser.setInitialDirectory(new File("C://"));
-        }
+
     }
 
     private void inputFileOpen() {
-        getRecentPath("Input");
+        getRecentPath(1);
 
         Window stage = vbMenu.getScene().getWindow();
         fileChooser.setTitle("Open File");
         File file = fileChooser.showOpenDialog(stage);
         try {
-            handler.write(file.getParentFile().toString(), recentStructureFiles);
+            List<String> strings = handler.readLines(recentFiles);
+
+            strings.set(1, file.getParentFile().toString());
+            handler.write(strings, recentFiles);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
         importFile(file);
     }
 
-    private void saveFile(String str) {
-        Window stage = vbMenu.getScene().getWindow();
-        fileChooser.setTitle("Save File");
-        if (str.equals("Structure")) {
-            fileChooser.setInitialFileName("Structure");
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Structure", "*.struc"));
+    private void saveFile() {
 
-        } else if (str.equals("Output")) {
-            fileChooser.setInitialFileName("Decoded_File");
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("text", "*.txt"));
-        }
+        Window stage = vbMenu.getScene().getWindow();
+
+        getRecentPath(0);
+        fileChooser.setTitle("Save File");
+        fileChooser.setInitialFileName("Structure");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Structure", "*.struc"));
+
 
         try {
+            List<String> strings = handler.readLines(recentFiles);
             File file = fileChooser.showSaveDialog(stage);
 
             StringBuilder sb = new StringBuilder();
-            if (str.equals("Structure")) {
-                sb.append(structureInputArea.getText());
-                handler.write(file.getParentFile().toString(), recentStructureFiles);
 
-            } else if (str.equals("Output")) {
-                sb.append(outputTextArea.getText());
-                handler.write(file.getParentFile().toString(), recentFiles);
-            }
+            sb.append(structureInputArea.getText());
+
+            strings.set(0, file.getParentFile().toString());
+            handler.write(strings, recentFiles);
+
 
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(sb.toString());
@@ -214,8 +220,6 @@ public class Controller implements Initializable {
     public void handleDragDrop(DragEvent dragEvent) {
         inputTextArea.appendText(dragEvent.getDragboard().getFiles().stream().map(File::getAbsolutePath).collect(Collectors.joining("\n")) + "\n");
         files.addAll(dragEvent.getDragboard().getFiles());
-        //updateRecentFiles();
-
     }
 
     public void onDragDroppedStructure(DragEvent dragEvent) {
@@ -323,16 +327,19 @@ public class Controller implements Initializable {
     }
 
     public void menuOpenStructure(ActionEvent actionEvent) {
-        String structureFile = "Structure";
         structureOpen();
     }
 
     public void saveStructureMenu(ActionEvent actionEvent) {
-        saveFile("Structure");
+        saveFile();
     }
 
     public void saveOutputMenu(ActionEvent actionEvent) {
-        saveFile("Output");
+        try {
+            exportButtonClicked(null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void clearAllMenu(ActionEvent actionEvent) {
@@ -341,15 +348,12 @@ public class Controller implements Initializable {
         inputTextArea.clear();
         outputTextArea.clear();
         files.clear();
+        outputStrings.clear();
     }
 
     public void helpMenuAction(ActionEvent actionEvent) {
         Runtime runtime = Runtime.getRuntime();
-//        Window stage = vbMenu.getScene().getWindow();
-//        fileChooser.setTitle("Save File");
-//        fileChooser.setInitialFileName("structure");
-//        File file = fileChooser.showOpenDialog(stage);
-//        String fileName = file.getAbsolutePath();
+
         try {
             runtime.exec("cmd /c test-data\\file.pdf");
             Process pwd = runtime.exec("pwd");
@@ -388,14 +392,19 @@ public class Controller implements Initializable {
         structureInputArea.clear();
         inputTextArea.clear();
         outputTextArea.clear();
+        files.clear();
+        outputStrings.clear();
     }
 
     public void clearOutputButton(MouseEvent mouseEvent) {
         outputTextArea.clear();
+        outputStrings.clear();
+        outputStrings.clear();
     }
 
     public void clearInputButton(MouseEvent mouseEvent) {
         inputTextArea.clear();
+        files.clear();
     }
 
     /*
@@ -405,7 +414,6 @@ public class Controller implements Initializable {
      */
     public void verifyButtonClicked(MouseEvent mouseEvent) {
 
-        Decoder decoder = new Decoder();
         List<String> structureList = Arrays.asList(structureInputArea.getText().split("\n"));
         boolean success = false;
         try {
@@ -422,7 +430,7 @@ public class Controller implements Initializable {
     }
 
     public void saveAsStructureOnMouseClicked(MouseEvent mouseEvent) {
-        saveFile("Structure");
+        saveFile();
     }
 
     /*
@@ -430,33 +438,34 @@ public class Controller implements Initializable {
                 Import , Export and Convert Button
     -------------------------------------------------------------------------
      */
-
     public void importButtonClicked(MouseEvent mouseEvent) {
         inputFileOpen();
-
     }
 
     public void convertButtonOnMouseClicked(MouseEvent mouseEvent) {
+        outputTextArea.clear();
+        HashMap<File, String> encodedDecoded = new HashMap<>();
         List<String> structureList = Arrays.asList(structureInputArea.getText().split("\n"));
         try {
             System.out.println(files.size());
             CountDownLatch latch = new CountDownLatch(files.size());
-            ArrayList<String> results = new ArrayList<>();
-            for (File file : files) {
+            for (int i = 0; i < files.size(); i++) {
+                File file = files.get(i);
+                outputStrings.add("");
+                final int notFinal = i;
                 new Thread(() -> {
                     try {
                         Decoder decoder = new Decoder();
                         BinaryStructure structure = BinaryStructure.getInstance(structureList);
                         System.out.println("Thread ");
                         ByteBuffer buffer = handler.readBytesToBuffer(file);
-                        results.add(decoder.decode(structure, buffer));
+                        outputStrings.set(notFinal, decoder.decode(structure, buffer));
                         latch.countDown();
 
-                        System.out.println("Thread 2");
+                        System.out.println(outputStrings);
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (InvalidBinaryStructureException e) {
-                        //todo show error dialog
                         Alert.display(e.getMessage());
                         System.out.println(e.getMessage());
                     }
@@ -464,20 +473,35 @@ public class Controller implements Initializable {
             }
             latch.await(2 * files.size(), TimeUnit.SECONDS);
             for (int i = 0; i < files.size(); i++) {
-                outputTextArea.appendText("===============Decoded file - " + files.get(i).toString() + "===============\n");
-                outputTextArea.appendText(results.get(i) + "\n\n");
+                outputTextArea.appendText("-----Decoded file - " + files.get(i).toString() + "-----\n");
+                outputTextArea.appendText(outputStrings.get(i) + "\n\n");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            outputTextArea.clear();
         }
     }
 
-    public void exportButtonClicked(MouseEvent mouseEvent) {
-        saveFile("Output");
-    }
+    public void exportButtonClicked(MouseEvent mouseEvent) throws IOException {
+        if (outputStrings == null || outputStrings.size() < 1) return;
+        List<File> filesToExport = new ArrayList<>();
+        Window stage = vbMenu.getScene().getWindow();
+        directoryChooser.setTitle("Select a folder to export to...");
+        directoryChooser.setInitialDirectory(getRecentPath(2));
+        File exportDir = directoryChooser.showDialog(stage);
 
+        List<String> strings = handler.readLines(recentFiles);
+
+        strings.set(2, exportDir.toString());
+
+        handler.write(strings, recentFiles);
+
+        for (int i = 0; i < files.size(); i++) {
+            File file = new File(exportDir + "\\" + files.get(i).getName().split("[.]")[0] + "-decoded.txt");
+            System.out.println(file.getName());
+            handler.createFile(file);
+            handler.write(outputStrings.get(i), file);
+        }
+    }
 }
 
 
