@@ -1,6 +1,5 @@
 package org.antman.binaryconverter.application.util;
 
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -55,7 +54,9 @@ public class FileHandler {
      */
     public ByteBuffer readBytesToBuffer(File file) throws IOException {
         InputStream inputStream = new FileInputStream(file);
-        return ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes);
+        return ByteBuffer.wrap(bytes);
     }
 
     public void writeBytes(byte[] bytes, File file) throws IOException {
