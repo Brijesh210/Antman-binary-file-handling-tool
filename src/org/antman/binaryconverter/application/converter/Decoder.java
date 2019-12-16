@@ -77,6 +77,7 @@ public class Decoder {
         }
         return result.toString();
     }
+
     private String extractPrimitive(Element element, ByteBuffer buffer) {
         if (element.getType() == Element.Type.FLOAT) {
             return String.valueOf(buffer.getFloat());
