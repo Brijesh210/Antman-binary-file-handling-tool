@@ -41,6 +41,19 @@ class Encoder {
     }
 
     @Test
+    void testEncodedThree(){
+        try {
+            byte[] actualBytes = getEncodedLvlSix();
+//            byte[] expectedBytes = handler.readBytesToBuffer(
+//                    new File("test-data\\encoded\\expected\\encoded-lvl-6.bin")).array();
+            handler.writeBytes(actualBytes,new File("test-data\\encoded\\generated\\encoded-lvl-6.bin"));
+//            assertArrayEquals(expectedBytes,actualBytes,"Encoded bytes are not what expected!");
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     void testEncodeThree(){
         //test with line breaks
     }
@@ -78,6 +91,22 @@ class Encoder {
         return buffer.array();
     }
 
+    //loop(12) char endloop var(x) loop(x) int float var(i) loop(i) int loop(3) char endloop endloop endloop
+    private byte[] getEncodedLvlSix(){
+        ByteBuffer buffer = ByteBuffer.allocate(5797);
+        putString("Hello world ",buffer);
+        buffer.putInt(123);  //var(x)
+        for(int i = 0; i < 123; i++){
+            buffer.putInt(i);
+            buffer.putFloat(i/2);
+            buffer.putInt(5);
+            for(int j = 0; j < 5; j++){
+                buffer.putInt(j);
+                putString("abc",buffer);
+            }
+        }
+        return buffer.array();
+    }
     private void putString(String s, ByteBuffer buffer){
         char[] sss = s.toCharArray();
         for(char ss : sss){
