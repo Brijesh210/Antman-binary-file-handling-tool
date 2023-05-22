@@ -4,7 +4,6 @@ import org.antman.binaryconverter.application.converter.structure.BinaryStructur
 import org.antman.binaryconverter.application.converter.structure.InvalidBinaryStructureException;
 import org.antman.binaryconverter.application.util.FileHandler;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -12,7 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DecoderTest {

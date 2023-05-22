@@ -40,8 +40,8 @@ public class Decoder {
                     }
                     result.append(loop(le, structure, buffer, 0));
                     pos += le.getNumberOfElements();
-                    for (int i = 0; i < le.getNumberOfElements(); i++) {
-                        structure.remove(0);
+                    if (le.getNumberOfElements() > 0) {
+                        structure.subList(0, le.getNumberOfElements()).clear();
                     }
                 }
                 pos++;
@@ -77,6 +77,7 @@ public class Decoder {
         }
         return result.toString();
     }
+
     private String extractPrimitive(Element element, ByteBuffer buffer) {
         if (element.getType() == Element.Type.FLOAT) {
             return String.valueOf(buffer.getFloat());
