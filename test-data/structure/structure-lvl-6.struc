@@ -1,0 +1,15 @@
+loop(12) 
+	char 
+endloop 
+var(x) 
+loop(x)
+	int 
+	float 
+	var(i) 
+	loop(i) 
+		int 
+		loop(3) 
+			char 
+		endloop 
+	endloop 
+endloop

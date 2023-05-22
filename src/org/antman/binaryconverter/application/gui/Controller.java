@@ -355,7 +355,7 @@ public class Controller implements Initializable {
         Runtime runtime = Runtime.getRuntime();
 
         try {
-            runtime.exec("cmd /c test-data\\file.pdf");
+            runtime.exec("cmd /c cfg\\file.pdf");
             Process pwd = runtime.exec("pwd");
             System.out.println(new Scanner(pwd.getInputStream()).nextLine());
         } catch (IOException e) {
