@@ -64,6 +64,4 @@ public abstract class Element {
             return this == Type.INT || this == Type.CHAR || this == Type.FLOAT;
         }
     }
-
-
 }

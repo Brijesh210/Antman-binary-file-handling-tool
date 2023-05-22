@@ -1,6 +1,5 @@
 package org.antman.binaryconverter.application.util;
 
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -9,23 +8,22 @@ import java.util.stream.Collectors;
 /**
  * Class providing basic file I/O methods
  *
- * @author Ismoil Atajanov
  * @version 2.0
+ * @author Ismoil Atajanov
  */
 public class FileHandler {
-    public FileHandler() {
+    public FileHandler(){
 
     }
-
     private PrintWriter writer;
 
     public String readAll(File file) throws FileNotFoundException {
         List<String> lines = readLines(file);
         StringBuilder sb = new StringBuilder();
-        for (String line : lines) {
-            sb.append(line).append("\n");
+        for(String line : lines) {
+            sb.append(line+"\n");
         }
-        return sb.substring(0, sb.length() - 1);
+        return sb.substring(0,sb.length()-1);
     }
 
     public List<String> readLines(File file) throws FileNotFoundException {
@@ -36,13 +34,14 @@ public class FileHandler {
 
     /**
      * Create new file
-     *
      * @param path file to create
      * @return true if file created, false if it already exists
-     * @throw IOException when you have issue with file
+     * @throws IOException
      */
     public boolean createFile(File path) throws IOException {
-        return path.createNewFile();
+        if(path.createNewFile()){
+            return true;
+        } else return false;
     }
 
     /**
@@ -56,10 +55,11 @@ public class FileHandler {
         InputStream inputStream = new FileInputStream(file);
         byte[] bytes = new byte[inputStream.available()];
         inputStream.read(bytes);
-        return ByteBuffer.wrap(bytes);
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        return buffer;
     }
 
-    public void writeBytes(byte[] bytes, File file) throws IOException {
+    public void writeBytes(byte[] bytes,File file) throws IOException {
         OutputStream outputStream = new FileOutputStream(file);
         outputStream.write(bytes);
     }
@@ -72,7 +72,7 @@ public class FileHandler {
 
     public void write(Collection<String> strings, File file) throws IOException {
         writer = new PrintWriter(new FileWriter(file));
-        for (String s : strings) {
+        for(String s : strings){
             writer.println(s);
         }
         writer.close();
